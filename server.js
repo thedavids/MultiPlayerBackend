@@ -30,11 +30,16 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('playerList', rooms[roomId].players);
   });
 
-  socket.on('move', ({ roomId, position }) => {
+  socket.on('move', ({ roomId, position, rotation }) => {
     const room = rooms[roomId];
     if (room && room.players[socket.id]) {
       room.players[socket.id].position = position;
-      socket.to(roomId).emit('playerMoved', { id: socket.id, position });
+      room.players[socket.id].rotation = rotation;
+      socket.to(roomId).emit('playerMoved', {
+        id: socket.id,
+        position,
+        rotation
+      });
     }
   });
 
@@ -51,14 +56,14 @@ io.on('connection', (socket) => {
     }
     console.log(`Client disconnected: ${socket.id}`);
   });
-  
-	socket.on('getRooms', (callback) => {
-	  const availableRooms = Object.entries(rooms).map(([id, room]) => ({
-		id,
-		count: Object.keys(room.players).length
-	  }));
-	  callback(availableRooms);
-	});
+
+  socket.on('getRooms', (callback) => {
+    const availableRooms = Object.entries(rooms).map(([id, room]) => ({
+      id,
+      count: Object.keys(room.players).length
+    }));
+    callback(availableRooms);
+  });
 });
 
 const PORT = process.env.PORT || 3000;
