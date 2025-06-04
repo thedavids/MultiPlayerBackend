@@ -49,6 +49,14 @@ io.on('connection', (socket) => {
         break;
       }
     }
+	
+	socket.on('getRooms', (callback) => {
+	  const availableRooms = Object.entries(rooms).map(([id, room]) => ({
+		id,
+		count: Object.keys(room.players).length
+	  }));
+	  callback(availableRooms);
+	});
     console.log(`Client disconnected: ${socket.id}`);
   });
 });
