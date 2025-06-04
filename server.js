@@ -49,7 +49,9 @@ io.on('connection', (socket) => {
         break;
       }
     }
-	
+    console.log(`Client disconnected: ${socket.id}`);
+  });
+  
 	socket.on('getRooms', (callback) => {
 	  const availableRooms = Object.entries(rooms).map(([id, room]) => ({
 		id,
@@ -57,8 +59,6 @@ io.on('connection', (socket) => {
 	  }));
 	  callback(availableRooms);
 	});
-    console.log(`Client disconnected: ${socket.id}`);
-  });
 });
 
 const PORT = process.env.PORT || 3000;
