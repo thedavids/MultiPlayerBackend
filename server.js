@@ -1,12 +1,14 @@
-const http = require('http');
-const { Server } = require('socket.io');
+import http from 'http';
+import { Server } from 'socket.io';
 
 const server = http.createServer();
 const io = new Server(server, {
-  cors: { origin: "*" } // Allow any origin (adjust for security)
+  cors: {
+    origin: '*'
+  }
 });
 
-const rooms = {}; // { roomId: { players: { socketId: { name, position } } } }
+const rooms = {};
 
 io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
@@ -21,7 +23,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinRoom', ({ roomId, name }, callback) => {
-    if (!rooms[roomId]) return callback({ error: "Room not found" });
+    if (!rooms[roomId]) return callback({ error: 'Room not found' });
     socket.join(roomId);
     rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 } };
     callback({ success: true });
@@ -53,5 +55,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Socket.IO server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
