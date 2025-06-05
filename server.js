@@ -89,7 +89,7 @@ function handleDisconnect(socket) {
   for (const roomId in rooms) {
     if (rooms[roomId].players[socket.id]) {
       delete rooms[roomId].players[socket.id];
-      socket.to(roomId).emit('playerDisconnected', socket.id);
+      io.to(roomId).emit('playerDisconnected', socket.id);
       if (Object.keys(rooms[roomId].players).length === 0) {
         delete rooms[roomId];
         console.warn("Room deleted", roomId);
