@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
     };
     socket.join(roomId);
     rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 } };
+    socket.emit("loadMap", rooms[roomId].map);
     callback({ roomId });
     io.to(roomId).emit('playerList', rooms[roomId].players);
   });
