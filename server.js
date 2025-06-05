@@ -69,19 +69,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    for (const roomId in rooms) {
-      if (rooms[roomId].players[socket.id]) {
-        delete rooms[roomId].players[socket.id];
-        socket.to(roomId).emit('playerDisconnected', socket.id);
-        if (Object.keys(rooms[roomId].players).length === 0) {
-          delete rooms[roomId];
-          console.warn("Room deleted", roomId);
-        }
-        break;
-      }
-    }
-    delete playerLastSeen[socket.id];
-    console.log(`Client disconnected: ${socket.id}`);
+    handleDisconnect(socket);
   });
 
   socket.on('getRooms', (callback) => {
@@ -97,16 +85,31 @@ io.on('connection', (socket) => {
   });
 });
 
+function handleDisconnect(socket) {
+  for (const roomId in rooms) {
+    if (rooms[roomId].players[socket.id]) {
+      delete rooms[roomId].players[socket.id];
+      socket.to(roomId).emit('playerDisconnected', socket.id);
+      if (Object.keys(rooms[roomId].players).length === 0) {
+        delete rooms[roomId];
+        console.warn("Room deleted", roomId);
+      }
+      break;
+    }
+  }
+  delete playerLastSeen[socket.id];
+  console.log(`Client disconnected: ${socket.id}`);
+}
+
 setInterval(() => {
   const now = Date.now();
   for (const id in playerLastSeen) {
-    if (now - playerLastSeen[id] > 15000) { // 15 seconds timeout
-      console.warn("Client timeout disconnecting:", id);
+    if (now - playerLastSeen[id] > 15000) {
       const sock = io.sockets.sockets.get(id);
-      try {
-        if (sock) sock.disconnect(true);
-      } catch (err) {
-        console.warn("Error disconnecting socket:", err);
+      if (sock) {
+        console.warn("Client timeout disconnecting:", id);
+        handleDisconnect(sock);
+        sock.disconnect(); // Optional, just closes the socket cleanly
       }
     }
   }
