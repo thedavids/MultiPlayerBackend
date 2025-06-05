@@ -98,6 +98,7 @@ setInterval(() => {
   const now = Date.now();
   for (const id in playerLastSeen) {
     if (now - playerLastSeen[id] > 15000) { // 15 seconds timeout
+      console.warn("Client timeout disconnecting:", id);
       const sock = io.sockets.sockets.get(id);
       try {
         if (sock) sock.disconnect(true);
