@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
     };
     socket.join(roomId);
     rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 } };
+    console.warn("Player created room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
     callback({ roomId });
     io.to(roomId).emit('playerList', rooms[roomId].players);
@@ -42,6 +43,7 @@ io.on('connection', (socket) => {
     if (!rooms[roomId]) return callback({ error: 'Room not found' });
     socket.join(roomId);
     rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 } };
+    console.warn("Player joined room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
     callback({ success: true });
     io.to(roomId).emit('playerList', rooms[roomId].players);
@@ -73,6 +75,7 @@ io.on('connection', (socket) => {
         socket.to(roomId).emit('playerDisconnected', socket.id);
         if (Object.keys(rooms[roomId].players).length === 0) {
           delete rooms[roomId];
+          console.warn("Room deleted", roomId);
         }
         break;
       }
