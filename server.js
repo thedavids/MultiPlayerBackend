@@ -11,13 +11,26 @@ const io = new Server(server, {
 const rooms = {};
 const playerLastSeen = {}; // { socket.id: timestamp }
 
+const maps = {
+  default: {
+    name: "Default Arena",
+    objects: [
+      { type: "box", position: { x: 0, y: 0, z: -5 }, size: [2, 2, 2], color: "#ff0000" },
+      { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [50, 1, 50], color: "#444444" }
+    ]
+  }
+};
+
 io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
   playerLastSeen[socket.id] = Date.now();
 
   socket.on('createRoom', ({ name }, callback) => {
     const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
-    rooms[roomId] = { players: {} };
+    rooms[roomId] = {
+      players: {},
+      map: maps.default
+    };
     socket.join(roomId);
     rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 } };
     callback({ roomId });
@@ -28,6 +41,7 @@ io.on('connection', (socket) => {
     if (!rooms[roomId]) return callback({ error: 'Room not found' });
     socket.join(roomId);
     rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 } };
+    socket.emit("loadMap", rooms[roomId].map);
     callback({ success: true });
     io.to(roomId).emit('playerList', rooms[roomId].players);
   });
