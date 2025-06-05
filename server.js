@@ -47,16 +47,22 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('playerList', rooms[roomId].players);
   });
 
-  socket.on('move', ({ roomId, position, rotation }) => {
-    const room = rooms[roomId];
-    if (room && room.players[socket.id]) {
-      room.players[socket.id].position = position;
-      room.players[socket.id].rotation = rotation;
-      socket.to(roomId).emit('playerMoved', {
-        id: socket.id,
-        position,
-        rotation
-      });
+  socket.on('move', (data) => {
+    try {
+      const { roomId, position, rotation } = data;
+      if (!roomId || !position) return;
+      const room = rooms[roomId];
+      if (room?.players[socket.id]) {
+        room.players[socket.id].position = position;
+        room.players[socket.id].rotation = rotation;
+        socket.to(roomId).emit('playerMoved', {
+          id: socket.id,
+          position,
+          rotation
+        });
+      }
+    } catch (err) {
+      console.error("Error handling move:", err);
     }
   });
 
@@ -93,8 +99,11 @@ setInterval(() => {
   for (const id in playerLastSeen) {
     if (now - playerLastSeen[id] > 15000) { // 15 seconds timeout
       const sock = io.sockets.sockets.get(id);
-      if (sock) sock.disconnect(true);
-      delete playerLastSeen[id];
+      try {
+        if (sock) sock.disconnect(true);
+      } catch (err) {
+        console.warn("Error disconnecting socket:", err);
+      }
     }
   }
 }, 10000);
