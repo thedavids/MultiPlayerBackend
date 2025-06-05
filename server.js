@@ -13,10 +13,20 @@ const playerLastSeen = {}; // { socket.id: timestamp }
 
 const maps = {
   default: {
-    name: "Default Arena",
+    name: "Jump Arena",
     objects: [
-      { type: "box", position: { x: 0, y: 0, z: -5 }, size: [2, 2, 2], color: "#ff0000" },
-      { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [50, 1, 50], color: "#444444" }
+      // Ground
+      { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [50, 1, 50], color: "#444444" },
+
+      // Jump boxes (like steps or platforms)
+      { type: "box", position: { x: 0, y: 0, z: -5 }, size: [2, 1, 2], color: "#ff0000" },
+      { type: "box", position: { x: 3, y: 2, z: -5 }, size: [2, 1, 2], color: "#00ff00" },
+      { type: "box", position: { x: 6, y: 4, z: -5 }, size: [2, 1, 2], color: "#0000ff" },
+      { type: "box", position: { x: 9, y: 6, z: -5 }, size: [2, 1, 2], color: "#ffff00" },
+      { type: "box", position: { x: 12, y: 8, z: -5 }, size: [2, 1, 2], color: "#ff00ff" },
+
+      // Optional: a small top platform
+      { type: "box", position: { x: 12, y: 10, z: -5 }, size: [3, 0.5, 3], color: "#00ffff" }
     ]
   }
 };
