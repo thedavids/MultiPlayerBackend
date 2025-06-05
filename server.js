@@ -9,9 +9,11 @@ const io = new Server(server, {
 });
 
 const rooms = {};
+const playerLastSeen = {}; // { socket.id: timestamp }
 
 io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
+  playerLastSeen[socket.id] = Date.now();
 
   socket.on('createRoom', ({ name }, callback) => {
     const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
@@ -54,6 +56,7 @@ io.on('connection', (socket) => {
         break;
       }
     }
+    delete playerLastSeen[socket.id];
     console.log(`Client disconnected: ${socket.id}`);
   });
 
@@ -64,7 +67,22 @@ io.on('connection', (socket) => {
     }));
     callback(availableRooms);
   });
+
+  socket.on("heartbeat", () => {
+    playerLastSeen[socket.id] = Date.now();
+  });
 });
+
+setInterval(() => {
+  const now = Date.now();
+  for (const id in playerLastSeen) {
+    if (now - playerLastSeen[id] > 15000) { // 15 seconds timeout
+      const sock = io.sockets.sockets.get(id);
+      if (sock) sock.disconnect(true);
+      delete playerLastSeen[id];
+    }
+  }
+}, 10000);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
