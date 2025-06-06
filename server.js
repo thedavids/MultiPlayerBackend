@@ -78,6 +78,23 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('shoot', ({ roomId, origin, direction, id }) => {
+    // Validate input
+    if (!roomId || !origin || !direction || typeof id !== 'string') return;
+
+    const room = rooms[roomId];
+    if (!room || !room.players[socket.id]) return;
+
+    const data = {
+      shooterId: socket.id,
+      origin,       // { x, y, z }
+      direction,    // { x, y, z }
+      id            // unique client-side laser ID
+    };
+
+    io.to(roomId).emit('laserFired', data);
+  });
+
   socket.on('disconnect', () => {
     handleDisconnect(socket);
   });
