@@ -10,6 +10,7 @@ const io = new Server(server, {
 
 const rooms = {};
 const playerLastSeen = {}; // { socket.id: timestamp }
+const activeLasers = {}; // roomId -> [{ id, shooterId, origin, direction, position, life }]
 
 const maps = {
   default: {
@@ -31,6 +32,14 @@ const maps = {
   }
 };
 
+function distanceVec3(a, b) {
+  return Math.sqrt(
+    (a.x - b.x) ** 2 +
+    (a.y - b.y) ** 2 +
+    (a.z - b.z) ** 2
+  );
+}
+
 io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
   playerLastSeen[socket.id] = Date.now();
@@ -42,7 +51,7 @@ io.on('connection', (socket) => {
       map: maps.default
     };
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 } };
+    rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 }, health: 100 };
     console.warn("Player created room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
     callback({ roomId, health: 100 });
@@ -52,7 +61,7 @@ io.on('connection', (socket) => {
   socket.on('joinRoom', ({ roomId, name }, callback) => {
     if (!rooms[roomId]) return callback({ error: 'Room not found' });
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 } };
+    rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 }, health: 100 };
     console.warn("Player joined room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
     callback({ success: true, health: 100 });
@@ -85,14 +94,26 @@ io.on('connection', (socket) => {
     const room = rooms[roomId];
     if (!room || !room.players[socket.id]) return;
 
-    const data = {
+    const laser = {
+      id,
       shooterId: socket.id,
-      origin,       // { x, y, z }
-      direction,    // { x, y, z }
-      id            // unique client-side laser ID
+      origin,
+      direction,
+      position: { ...origin },
+      life: 2000, // ms to live
+      speed: 100  // units/sec
     };
 
-    io.to(roomId).emit('laserFired', data);
+    if (!activeLasers[roomId]) activeLasers[roomId] = [];
+    activeLasers[roomId].push(laser);
+
+    // Send initial fire for visuals
+    io.to(roomId).emit('laserFired', {
+      shooterId: socket.id,
+      origin,
+      direction,
+      id
+    });
   });
 
   socket.on('disconnect', () => {
@@ -141,6 +162,59 @@ setInterval(() => {
     }
   }
 }, 10000);
+
+setInterval(() => {
+  const now = Date.now();
+
+  for (const roomId in activeLasers) {
+    const lasers = activeLasers[roomId];
+    const room = rooms[roomId];
+    if (!room) continue;
+
+    for (let i = lasers.length - 1; i >= 0; i--) {
+      const laser = lasers[i];
+      const delta = 1000 / 60; // ~16ms per tick
+      const moveDistance = (laser.speed * delta) / 1000;
+
+      // Move laser forward
+      laser.position.x += laser.direction.x * moveDistance;
+      laser.position.y += laser.direction.y * moveDistance;
+      laser.position.z += laser.direction.z * moveDistance;
+      laser.life -= delta;
+
+      // Check for hit
+      const hitRadius = 0.6;
+      let hitId = null;
+      let hitPlayer = null;
+
+      for (const [pid, player] of Object.entries(room.players)) {
+        if (pid === laser.shooterId) continue;
+        const dist = distanceVec3(laser.position, player.position);
+        if (dist < hitRadius) {
+          hitId = pid;
+          hitPlayer = player;
+          hitPlayer.health -= 10;
+          break;
+        }
+      }
+
+      if (hitId || laser.life <= 0) {
+        // Remove laser
+        lasers.splice(i, 1);
+
+        // Inform clients
+        if (hitId) {
+          io.to(roomId).emit('laserHit', {
+            shooterId: laser.shooterId,
+            targetId: hitId,
+            position: laser.position,
+            health: hitPlayer.health
+          });
+        }
+      }
+    }
+  }
+}, 1000 / 60); // 60 FPS
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
