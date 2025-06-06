@@ -40,6 +40,10 @@ function distanceVec3(a, b) {
   );
 }
 
+function socketToRoom(roomId, excludeSocketId) {
+  return io.to(roomId).except(excludeSocketId);
+}
+
 io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
   playerLastSeen[socket.id] = Date.now();
@@ -163,6 +167,33 @@ setInterval(() => {
   }
 }, 10000);
 
+function respawnPlayer(roomId, playerId) {
+  const room = rooms[roomId];
+  if (!room || !room.players[playerId]) return;
+
+  // Reset data after delay
+  setTimeout(() => {
+    const spawnPosition = { x: 0, y: 2, z: 0 }; // change as needed
+    room.players[playerId].position = spawnPosition;
+
+    // Optionally, reset health too
+    room.players[playerId].health = 100;
+
+    // Notify player (so they can update UI and visuals)
+    io.to(playerId).emit('respawn', {
+      position: spawnPosition,
+      health: 100
+    });
+
+    // Also notify other players about position reset
+    socketToRoom(roomId, playerId).emit('playerMoved', {
+      id: playerId,
+      position: spawnPosition,
+      rotation: { x: 0, y: 0, z: 0 }
+    });
+  }, 1000);
+}
+
 setInterval(() => {
   const now = Date.now();
 
@@ -194,6 +225,9 @@ setInterval(() => {
           hitId = pid;
           hitPlayer = player;
           hitPlayer.health -= 10;
+          if (hitPlayer.health <= 0) {
+            respawnPlayer(roomId, hitId);
+          }
           break;
         }
       }
