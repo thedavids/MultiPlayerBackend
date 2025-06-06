@@ -45,7 +45,7 @@ io.on('connection', (socket) => {
     rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 } };
     console.warn("Player created room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
-    callback({ roomId });
+    callback({ roomId, health: 100 });
     io.to(roomId).emit('playerList', rooms[roomId].players);
   });
 
@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
     rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 } };
     console.warn("Player joined room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
-    callback({ success: true });
+    callback({ success: true, health: 100 });
     io.to(roomId).emit('playerList', rooms[roomId].players);
   });
 
