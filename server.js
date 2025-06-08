@@ -20,11 +20,11 @@ const maps = {
       { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [100, 1, 100], color: "#444444" },
 
       // Staggered platforms
-      { type: "box", position: { x: -20, y: 0, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
-      { type: "box", position: { x: -10, y: 2, z: -10 }, size: [4, 1, 4], color: "#00ff00" },
+      { type: "box", position: { x: -10, y: 0, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
+      { type: "box", position: { x: -5, y: 2, z: -10 }, size: [4, 1, 4], color: "#00ff00" },
       { type: "box", position: { x: 0, y: 4, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
-      { type: "box", position: { x: 10, y: 6, z: -10 }, size: [4, 1, 4], color: "#ffff00" },
-      { type: "box", position: { x: 20, y: 8, z: -10 }, size: [4, 1, 4], color: "#ff00ff" },
+      { type: "box", position: { x: 5, y: 6, z: -10 }, size: [4, 1, 4], color: "#ffff00" },
+      { type: "box", position: { x: 10, y: 8, z: -10 }, size: [4, 1, 4], color: "#ff00ff" },
 
       // Central tower platform
       { type: "box", position: { x: 0, y: 10, z: 0 }, size: [6, 1, 6], color: "#00ffff" },
