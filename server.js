@@ -40,6 +40,48 @@ function distanceVec3(a, b) {
   );
 }
 
+function vec3({ x, y, z }) {
+  return { x, y, z };
+}
+function subtractVec3(a, b) {
+  return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
+}
+function addVec3(a, b) {
+  return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
+}
+function scaleVec3(a, s) {
+  return { x: a.x * s, y: a.y * s, z: a.z * s };
+}
+function dotVec3(a, b) {
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+function distanceVec3(a, b) {
+  return Math.sqrt(
+    (a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2
+  );
+}
+function normalizeVec3(v) {
+  const length = Math.sqrt(v.x ** 2 + v.y ** 2 + v.z ** 2) || 1;
+  return { x: v.x / length, y: v.y / length, z: v.z / length };
+}
+
+function segmentSphereIntersect(p1, p2, center, radius) {
+  const d = subtractVec3(p2, p1); // segment direction
+  const f = subtractVec3(p1, center); // from center to segment start
+
+  const a = dotVec3(d, d);
+  const b = 2 * dotVec3(f, d);
+  const c = dotVec3(f, f) - radius * radius;
+
+  const discriminant = b * b - 4 * a * c;
+  if (discriminant < 0) return false;
+
+  const t1 = (-b - Math.sqrt(discriminant)) / (2 * a);
+  const t2 = (-b + Math.sqrt(discriminant)) / (2 * a);
+
+  return (t1 >= 0 && t1 <= 1) || (t2 >= 0 && t2 <= 1);
+}
+
 function socketToRoom(roomId, excludeSocketId) {
   return io.to(roomId).except(excludeSocketId);
 }
@@ -207,6 +249,9 @@ setInterval(() => {
       const delta = 1000 / 60; // ~16ms per tick
       const moveDistance = (laser.speed * delta) / 1000;
 
+      // Track previous position for swept collision
+      laser.prevPosition = { ...laser.position };
+
       // Move laser forward
       laser.position.x += laser.direction.x * moveDistance;
       laser.position.y += laser.direction.y * moveDistance;
@@ -220,10 +265,23 @@ setInterval(() => {
 
       for (const [pid, player] of Object.entries(room.players)) {
         if (pid === laser.shooterId) continue;
-        const dist = distanceVec3(laser.position, player.position);
-        if (dist < hitRadius) {
+
+        // Swept hit detection (segment-sphere)
+        const hit = segmentSphereIntersect(
+          laser.prevPosition,
+          laser.position,
+          player.position,
+          hitRadius
+        );
+
+        if (hit) {
           hitId = pid;
           hitPlayer = player;
+
+          if (typeof hitPlayer.health !== 'number') {
+            hitPlayer.health = 100;
+          }
+
           hitPlayer.health -= 10;
           if (hitPlayer.health <= 0) {
             respawnPlayer(roomId, hitId);
