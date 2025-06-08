@@ -265,6 +265,7 @@ function respawnPlayer(roomId, playerId) {
 setInterval(() => {
   const now = Date.now();
 
+  const delta = 1000 / 60.0; // ~16ms per tick
   for (const roomId in activeLasers) {
     const lasers = activeLasers[roomId];
     const room = rooms[roomId];
@@ -272,17 +273,10 @@ setInterval(() => {
 
     for (let i = lasers.length - 1; i >= 0; i--) {
       const laser = lasers[i];
-      const delta = 1000 / 60; // ~16ms per tick
       const moveDistance = (laser.speed * delta) / 1000;
 
       // Track previous position for swept collision
       laser.prevPosition = { ...laser.position };
-
-      // Raycast from prev to current laser position
-      const origin = laser.prevPosition;
-      const destination = laser.position;
-      const direction = normalizeVec3(subtractVec3(destination, origin));
-      const rayLength = distanceVec3(origin, destination);
 
       // Check if laser hit a map object (using AABB)
       let blocked = false;
@@ -303,7 +297,7 @@ setInterval(() => {
           z: obj.position.z + halfSize.z
         };
 
-        if (rayIntersectsAABB(origin, direction, rayLength, min, max)) {
+        if (rayIntersectsAABB(laser.prevPosition, laser.direction, moveDistance, min, max)) {
           blocked = true;
           break;
         }
