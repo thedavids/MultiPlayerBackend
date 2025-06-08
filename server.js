@@ -90,8 +90,26 @@ function segmentSphereIntersect(p1, p2, center, radius) {
   return (t1 >= 0 && t1 <= 1) || (t2 >= 0 && t2 <= 1);
 }
 
-function socketToRoom(roomId, excludeSocketId) {
-  return io.to(roomId).except(excludeSocketId);
+function rayIntersectsAABB(origin, dir, maxDist, min, max) {
+  let tmin = (min.x - origin.x) / dir.x;
+  let tmax = (max.x - origin.x) / dir.x;
+  if (tmin > tmax) [tmin, tmax] = [tmax, tmin];
+
+  let tymin = (min.y - origin.y) / dir.y;
+  let tymax = (max.y - origin.y) / dir.y;
+  if (tymin > tymax) [tymin, tymax] = [tymax, tymin];
+
+  if ((tmin > tymax) || (tymin > tmax)) return false;
+  if (tymin > tmin) tmin = tymin;
+  if (tymax < tmax) tmax = tymax;
+
+  let tzmin = (min.z - origin.z) / dir.z;
+  let tzmax = (max.z - origin.z) / dir.z;
+  if (tzmin > tzmax) [tzmin, tzmax] = [tzmax, tzmin];
+
+  if ((tmin > tzmax) || (tzmin > tmax)) return false;
+  const hitDist = tzmin > tmin ? tzmin : tmin;
+  return hitDist >= 0 && hitDist <= maxDist;
 }
 
 io.on('connection', (socket) => {
@@ -259,6 +277,48 @@ setInterval(() => {
 
       // Track previous position for swept collision
       laser.prevPosition = { ...laser.position };
+
+      // Raycast from prev to current laser position
+      const origin = laser.prevPosition;
+      const destination = laser.position;
+      const direction = normalizeVec3(subtractVec3(destination, origin));
+      const rayLength = distanceVec3(origin, destination);
+
+      // Check if laser hit a map object (using AABB)
+      let blocked = false;
+      for (const obj of room.map.objects) {
+        const halfSize = {
+          x: obj.size[0] / 2,
+          y: obj.size[1] / 2,
+          z: obj.size[2] / 2
+        };
+        const min = {
+          x: obj.position.x - halfSize.x,
+          y: obj.position.y - halfSize.y,
+          z: obj.position.z - halfSize.z
+        };
+        const max = {
+          x: obj.position.x + halfSize.x,
+          y: obj.position.y + halfSize.y,
+          z: obj.position.z + halfSize.z
+        };
+
+        if (rayIntersectsAABB(origin, direction, rayLength, min, max)) {
+          blocked = true;
+          break;
+        }
+      }
+
+      if (blocked) {
+        // Inform all players so they can remove the laser visually
+        io.to(roomId).emit('laserBlocked', {
+          id: laser.id,
+          position: laser.position
+        });
+
+        lasers.splice(i, 1);
+        continue; // skip player hit checks
+      }
 
       // Move laser forward
       laser.position.x += laser.direction.x * moveDistance;
