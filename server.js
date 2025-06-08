@@ -14,20 +14,28 @@ const activeLasers = {}; // roomId -> [{ id, shooterId, origin, direction, posit
 
 const maps = {
   default: {
-    name: "Jump Arena",
+    name: "Jump Arena XL",
     objects: [
-      // Ground
-      { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [50, 1, 50], color: "#444444" },
+      // Main ground
+      { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [100, 1, 100], color: "#444444" },
 
-      // Jump boxes (like steps or platforms)
-      { type: "box", position: { x: 0, y: 0, z: -5 }, size: [2, 1, 2], color: "#ff0000" },
-      { type: "box", position: { x: 3, y: 2, z: -5 }, size: [2, 1, 2], color: "#00ff00" },
-      { type: "box", position: { x: 6, y: 4, z: -5 }, size: [2, 1, 2], color: "#0000ff" },
-      { type: "box", position: { x: 9, y: 6, z: -5 }, size: [2, 1, 2], color: "#ffff00" },
-      { type: "box", position: { x: 12, y: 8, z: -5 }, size: [2, 1, 2], color: "#ff00ff" },
+      // Staggered platforms
+      { type: "box", position: { x: -20, y: 0, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
+      { type: "box", position: { x: -10, y: 2, z: -10 }, size: [4, 1, 4], color: "#00ff00" },
+      { type: "box", position: { x: 0, y: 4, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
+      { type: "box", position: { x: 10, y: 6, z: -10 }, size: [4, 1, 4], color: "#ffff00" },
+      { type: "box", position: { x: 20, y: 8, z: -10 }, size: [4, 1, 4], color: "#ff00ff" },
 
-      // Optional: a small top platform
-      { type: "box", position: { x: 12, y: 10, z: -5 }, size: [3, 0.5, 3], color: "#00ffff" }
+      // Central tower platform
+      { type: "box", position: { x: 0, y: 10, z: 0 }, size: [6, 1, 6], color: "#00ffff" },
+
+      // House base
+      { type: "box", position: { x: -30, y: 0, z: 20 }, size: [10, 2, 10], color: "#888888" }, // floor
+      { type: "box", position: { x: -35, y: 3, z: 20 }, size: [1, 6, 10], color: "#222" },    // left wall
+      { type: "box", position: { x: -25, y: 3, z: 20 }, size: [1, 6, 10], color: "#222" },    // right wall
+      { type: "box", position: { x: -30, y: 3, z: 15 }, size: [10, 6, 1], color: "#222" },    // front wall
+      { type: "box", position: { x: -30, y: 3, z: 25 }, size: [10, 6, 1], color: "#222" },    // back wall
+      { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], color: "#444" }     // roof
     ]
   }
 };
