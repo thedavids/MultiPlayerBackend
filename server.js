@@ -228,7 +228,7 @@ function respawnPlayer(roomId, playerId) {
     });
 
     // Also notify other players about position reset
-    socketToRoom(roomId, playerId).emit('playerMoved', {
+    io.to(roomId).emit('playerMoved', {
       id: playerId,
       position: spawnPosition,
       rotation: { x: 0, y: 0, z: 0 }
