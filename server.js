@@ -43,23 +43,23 @@ function distanceVec3(a, b) {
 function vec3({ x, y, z }) {
   return { x, y, z };
 }
+
 function subtractVec3(a, b) {
   return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
 }
+
 function addVec3(a, b) {
   return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
 }
+
 function scaleVec3(a, s) {
   return { x: a.x * s, y: a.y * s, z: a.z * s };
 }
+
 function dotVec3(a, b) {
   return a.x * b.x + a.y * b.y + a.z * b.z;
 }
-function distanceVec3(a, b) {
-  return Math.sqrt(
-    (a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2
-  );
-}
+
 function normalizeVec3(v) {
   const length = Math.sqrt(v.x ** 2 + v.y ** 2 + v.z ** 2) || 1;
   return { x: v.x / length, y: v.y / length, z: v.z / length };
