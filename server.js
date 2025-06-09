@@ -17,7 +17,7 @@ const maps = {
     name: "Jump Arena XL",
     objects: [
       // Main ground
-      { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [100, 1, 100], color: "#444444" },
+      { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [200, 1, 200], texture: "https://www.dailysummary.io/textures/stone.jpg" },
 
       // Staggered platforms
       { type: "box", position: { x: -10, y: 0, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
@@ -25,17 +25,18 @@ const maps = {
       { type: "box", position: { x: 0, y: 4, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
       { type: "box", position: { x: 5, y: 6, z: -10 }, size: [4, 1, 4], color: "#ffff00" },
       { type: "box", position: { x: 10, y: 8, z: -10 }, size: [4, 1, 4], color: "#ff00ff" },
+      { type: "box", position: { x: 15, y: 10, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
+      { type: "box", position: { x: 20, y: 12, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
 
       // Central tower platform
       { type: "box", position: { x: 0, y: 10, z: 0 }, size: [6, 1, 6], color: "#00ffff" },
 
       // House base
-      { type: "box", position: { x: -30, y: 0, z: 20 }, size: [10, 2, 10], color: "#888888" }, // floor
-      { type: "box", position: { x: -35, y: 3, z: 20 }, size: [1, 6, 10], color: "#222" },    // left wall
-      { type: "box", position: { x: -25, y: 3, z: 20 }, size: [1, 6, 10], color: "#222" },    // right wall
-      { type: "box", position: { x: -30, y: 3, z: 15 }, size: [10, 6, 1], color: "#222" },    // front wall
-      { type: "box", position: { x: -30, y: 3, z: 25 }, size: [10, 6, 1], color: "#222" },    // back wall
-      { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], color: "#444" }     // roof
+      { type: "box", position: { x: -30, y: 0, z: 20 }, size: [10, 2, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" }, // floor
+      { type: "box", position: { x: -35, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // left wall
+      { type: "box", position: { x: -25, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // right wall
+      { type: "box", position: { x: -30, y: 3, z: 25 }, size: [10, 6, 1], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // back wall
+      { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" }     // roof
     ]
   }
 };
