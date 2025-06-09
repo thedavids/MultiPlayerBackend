@@ -203,6 +203,20 @@ io.on('connection', (socket) => {
   socket.on("heartbeat", () => {
     playerLastSeen[socket.id] = Date.now();
   });
+
+  socket.on('grappleStart', ({ roomId, origin, direction }) => {
+    socket.to(roomId).emit('remoteGrappleStart', {
+      playerId: socket.id,
+      origin,
+      direction
+    });
+  });
+
+  socket.on('grappleEnd', ({ roomId }) => {
+    socket.to(roomId).emit('remoteGrappleEnd', {
+      playerId: socket.id
+    });
+  });
 });
 
 function handleDisconnect(socket) {
