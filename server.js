@@ -233,6 +233,7 @@ function handleDisconnect(socket) {
     if (rooms[roomId].players[socket.id]) {
       delete rooms[roomId].players[socket.id];
       io.to(roomId).emit('playerDisconnected', socket.id);
+      console.log(`Client disconnected: ${socket.id}`);
       if (Object.keys(rooms[roomId].players).length === 0) {
         delete rooms[roomId];
         console.warn("Room deleted", roomId);
@@ -241,7 +242,6 @@ function handleDisconnect(socket) {
     }
   }
   delete playerLastSeen[socket.id];
-  console.log(`Client disconnected: ${socket.id}`);
 }
 
 setInterval(() => {
@@ -261,11 +261,11 @@ setInterval(() => {
 }, 10000);
 
 function cleanupStalePlayer(id) {
-  console.warn("Cleaning up stale player ID:", id);
   for (const roomId in rooms) {
     if (rooms[roomId].players[id]) {
       delete rooms[roomId].players[id];
       io.to(roomId).emit('playerDisconnected', id);
+      console.log(`Client disconnected: ${socket.id}`);
       if (Object.keys(rooms[roomId].players).length === 0) {
         delete rooms[roomId];
         console.warn("Room deleted (stale cleanup):", roomId);
