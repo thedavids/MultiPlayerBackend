@@ -17,7 +17,7 @@ const maps = {
     name: "Jump Arena XL",
     objects: [
       // Main ground
-      { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [200, 1, 200], texture: "https://dailysummary.io/textures/stone.jpg" },
+      { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [200, 1, 200], texture: "https://www.dailysummary.io/textures/stone.jpg" },
 
       // Staggered platforms
       { type: "box", position: { x: -10, y: 0, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
@@ -32,11 +32,11 @@ const maps = {
       { type: "box", position: { x: 0, y: 10, z: 0 }, size: [6, 1, 6], color: "#00ffff" },
 
       // House base
-      { type: "box", position: { x: -30, y: 0, z: 20 }, size: [10, 2, 10], texture: "https://dailysummary.io/textures/brick_diffuse.jpg" }, // floor
-      { type: "box", position: { x: -35, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://dailysummary.io/textures/brick_diffuse.jpg" },    // left wall
-      { type: "box", position: { x: -25, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://dailysummary.io/textures/brick_diffuse.jpg" },    // right wall
-      { type: "box", position: { x: -30, y: 3, z: 25 }, size: [10, 6, 1], texture: "https://dailysummary.io/textures/brick_diffuse.jpg" },    // back wall
-      { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], texture: "https://dailysummary.io/textures/brick_diffuse.jpg" }     // roof
+      { type: "box", position: { x: -30, y: 0, z: 20 }, size: [10, 2, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" }, // floor
+      { type: "box", position: { x: -35, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // left wall
+      { type: "box", position: { x: -25, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // right wall
+      { type: "box", position: { x: -30, y: 3, z: 25 }, size: [10, 6, 1], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // back wall
+      { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" }     // roof
     ]
   }
 };
