@@ -252,11 +252,29 @@ setInterval(() => {
       if (sock) {
         console.warn("Client timeout disconnecting:", id);
         handleDisconnect(sock);
-        sock.disconnect(); // Optional, just closes the socket cleanly
+        sock.disconnect(); // optional
+      } else {
+        cleanupStalePlayer(id); // fallback
       }
     }
   }
 }, 10000);
+
+function cleanupStalePlayer(id) {
+  console.warn("Cleaning up stale player ID:", id);
+  for (const roomId in rooms) {
+    if (rooms[roomId].players[id]) {
+      delete rooms[roomId].players[id];
+      io.to(roomId).emit('playerDisconnected', id);
+      if (Object.keys(rooms[roomId].players).length === 0) {
+        delete rooms[roomId];
+        console.warn("Room deleted (stale cleanup):", roomId);
+      }
+      break;
+    }
+  }
+  delete playerLastSeen[id];
+}
 
 function respawnPlayer(roomId, playerId) {
   const room = rooms[roomId];
