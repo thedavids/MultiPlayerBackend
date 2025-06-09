@@ -28,6 +28,14 @@ const maps = {
       { type: "box", position: { x: 15, y: 10, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
       { type: "box", position: { x: 20, y: 12, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
 
+      { type: "box", position: { x: -10, y: 0, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: -5, y: 2, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 0, y: 4, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 5, y: 6, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 10, y: 8, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 15, y: 10, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 20, y: 12, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+
       // Central tower platform
       { type: "box", position: { x: 0, y: 10, z: 0 }, size: [6, 1, 6], color: "#00ffff" },
 
