@@ -45,6 +45,10 @@ const maps = {
       { type: "box", position: { x: -25, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // right wall
       { type: "box", position: { x: -30, y: 3, z: 25 }, size: [10, 6, 1], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // back wall
       { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" }     // roof
+    ],
+    healthPacks: [
+      { id: 'hp1', position: { x: 5, y: 1, z: 5 }, available: true },
+      { id: 'hp2', position: { x: -10, y: 1, z: 10 }, available: true }
     ]
   }
 };
@@ -162,6 +166,7 @@ io.on('connection', (socket) => {
           position,
           rotation
         });
+        tryPickupHealthPack(roomId, socket.id);
       }
     } catch (err) {
       console.error("Error handling move:", err);
@@ -410,6 +415,39 @@ setInterval(() => {
     }
   }
 }, 1000 / 60); // 60 FPS
+
+function tryPickupHealthPack(roomId, playerId) {
+  const room = rooms[roomId];
+  if (!room) return;
+
+  const player = room.players[playerId];
+  if (!player) return;
+
+  for (const pack of room.healthPacks) {
+    if (!pack.available) continue;
+
+    const dx = player.position.x - pack.position.x;
+    const dy = player.position.y - pack.position.y;
+    const dz = player.position.z - pack.position.z;
+    const distSq = dx * dx + dy * dy + dz * dz;
+
+    if (distSq < 2.0) {
+      pack.available = false;
+      player.health = Math.min(100, (player.health || 100) + 25);
+
+      io.to(roomId).emit("healthPackTaken", {
+        id: pack.id,
+        targetPlayerId,
+        health: player.health
+      });
+
+      setTimeout(() => {
+        pack.available = true;
+        io.to(roomId).emit("healthPackRespawned", { id: pack.id });
+      }, 10000);
+    }
+  }
+}
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
