@@ -47,8 +47,8 @@ const maps = {
       { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" }     // roof
     ],
     healthPacks: [
-      { id: 'hp1', position: { x: 5, y: 1, z: 5 }, available: true },
-      { id: 'hp2', position: { x: -10, y: 1, z: 10 }, available: true }
+      { id: 'hp1', position: { x: -50, y: 1, z: 50 }, available: true },
+      { id: 'hp2', position: { x: 50, y: 1, z: 100 }, available: true }
     ]
   }
 };
