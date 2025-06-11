@@ -423,7 +423,7 @@ function tryPickupHealthPack(roomId, playerId) {
   const player = room.players[playerId];
   if (!player) return;
 
-  for (const pack of room.healthPacks) {
+  for (const pack of room.map.healthPacks) {
     if (!pack.available) continue;
 
     const dx = player.position.x - pack.position.x;
