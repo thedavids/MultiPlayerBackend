@@ -437,7 +437,7 @@ function tryPickupHealthPack(roomId, playerId) {
 
       io.to(roomId).emit("healthPackTaken", {
         id: pack.id,
-        targetPlayerId,
+        targetPlayerId: playerId,
         health: player.health
       });
 
