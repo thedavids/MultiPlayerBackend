@@ -295,7 +295,7 @@ function respawnPlayer(roomId, playerId) {
 
     // Notify player (so they can update UI and visuals)
     io.to(playerId).emit('respawn', {
-      id: playerId,
+      playerId: playerId,
       position: spawnPosition,
       health: 100
     });
