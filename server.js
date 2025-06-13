@@ -22,11 +22,11 @@ const maps = {
       // Staggered platforms
       { type: "box", position: { x: -100, y: 0, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
       { type: "box", position: { x: -95, y: 2, z: -10 }, size: [4, 1, 4], color: "#00ff00" },
-      { type: "box", position: { x: 90, y: 4, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
-      { type: "box", position: { x: 85, y: 6, z: -10 }, size: [4, 1, 4], color: "#ffff00" },
-      { type: "box", position: { x: 80, y: 8, z: -10 }, size: [4, 1, 4], color: "#ff00ff" },
-      { type: "box", position: { x: 75, y: 10, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
-      { type: "box", position: { x: 70, y: 12, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
+      { type: "box", position: { x: -90, y: 4, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
+      { type: "box", position: { x: -85, y: 6, z: -10 }, size: [4, 1, 4], color: "#ffff00" },
+      { type: "box", position: { x: -80, y: 8, z: -10 }, size: [4, 1, 4], color: "#ff00ff" },
+      { type: "box", position: { x: -75, y: 10, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
+      { type: "box", position: { x: -70, y: 12, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
 
       { type: "box", position: { x: -10, y: 0, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
       { type: "box", position: { x: -5, y: 2, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
@@ -37,7 +37,7 @@ const maps = {
       { type: "box", position: { x: 20, y: 12, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
 
       // Central tower platform
-      { type: "box", position: { x: 0, y: 10, z: 35 }, size: [6, 10, 6], color: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { type: "box", position: { x: 0, y: 5, z: 35 }, size: [6, 10, 6], color: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
 
       // House base
       { type: "box", position: { x: -30, y: 0, z: 20 }, size: [10, 2, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
