@@ -291,7 +291,7 @@ function respawnPlayer(roomId, playerId) {
     // Notify player (so they can update UI and visuals)
     io.to(roomId).emit('playerDied', {
       playerId: playerId,
-      position: room.players[playerId].position
+      position: { x: room.players[playerId].position.x, y: room.players[playerId].position.y, z: room.players[playerId].position.z } 
     });
 
     const spawnPosition = { x: 0, y: 0, z: 0 }; // change as needed
