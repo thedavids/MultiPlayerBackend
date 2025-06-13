@@ -69,8 +69,7 @@ const maps = {
       { type: "box", position: { x: 6, y: 16, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
       { type: "box", position: { x: 8, y: 17, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
       { type: "box", position: { x: 10, y: 18, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 12, y: 19, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 14, y: 20, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" }
+      { type: "box", position: { x: 12, y: 19, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" }
     ],
 
     healthPacks: [
