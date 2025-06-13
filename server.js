@@ -294,7 +294,7 @@ function respawnPlayer(roomId, playerId) {
     room.players[playerId].health = 100;
 
     // Notify player (so they can update UI and visuals)
-    io.to(playerId).emit('respawn', {
+    io.to(roomId).emit('respawn', {
       playerId: playerId,
       position: spawnPosition,
       health: 100
