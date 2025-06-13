@@ -47,15 +47,20 @@ const maps = {
       { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
 
       // === HUGE second floor ===
-      { type: "box", position: { x: 40, y: 6, z: 0 }, size: [100, 1, 100], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 60, y: 20, z: 0 }, size: [100, 1, 100], texture: "https://www.dailysummary.io/textures/stone.jpg" },
 
       // === Wooden staircase up to it ===
+      { type: "box", position: { x: -12, y: 0, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
       { type: "box", position: { x: -10, y: 1, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
       { type: "box", position: { x: -8, y: 2, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
       { type: "box", position: { x: -6, y: 3, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
       { type: "box", position: { x: -4, y: 4, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
       { type: "box", position: { x: -2, y: 5, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 0, y: 6, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" }
+      { type: "box", position: { x: 0, y: 6, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 2, y: 7, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 4, y: 8, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 5, y: 9, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 8, y: 10, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" }
     ],
 
     healthPacks: [
