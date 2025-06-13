@@ -40,15 +40,28 @@ const maps = {
       { type: "box", position: { x: 0, y: 10, z: 0 }, size: [6, 1, 6], color: "#00ffff" },
 
       // House base
-      { type: "box", position: { x: -30, y: 0, z: 20 }, size: [10, 2, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" }, // floor
-      { type: "box", position: { x: -35, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // left wall
-      { type: "box", position: { x: -25, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // right wall
-      { type: "box", position: { x: -30, y: 3, z: 25 }, size: [10, 6, 1], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },    // back wall
-      { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" }     // roof
+      { type: "box", position: { x: -30, y: 0, z: 20 }, size: [10, 2, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { type: "box", position: { x: -35, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { type: "box", position: { x: -25, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { type: "box", position: { x: -30, y: 3, z: 25 }, size: [10, 6, 1], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+
+      // === HUGE second floor ===
+      { type: "box", position: { x: 40, y: 6, z: 0 }, size: [100, 1, 100], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+
+      // === Wooden staircase up to it ===
+      { type: "box", position: { x: -10, y: 1, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: -8, y: 2, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: -6, y: 3, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: -4, y: 4, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: -2, y: 5, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { type: "box", position: { x: 0, y: 6, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" }
     ],
+
     healthPacks: [
       { id: 'hp1', position: { x: 0, y: 11, z: 0 }, available: true },
-      { id: 'hp2', position: { x: -30, y: 8, z: 20 }, available: true }
+      { id: 'hp2', position: { x: -30, y: 8, z: 20 }, available: true },
+      { id: 'hp3', position: { x: 40, y: 7, z: 0 }, available: true } // on 2nd floor
     ]
   }
 };
