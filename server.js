@@ -37,7 +37,7 @@ const maps = {
       { type: "box", position: { x: 20, y: 12, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
 
       // Central tower platform
-      { type: "box", position: { x: 0, y: 5, z: 35 }, size: [6, 10, 6], color: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { type: "box", position: { x: 0, y: 4, z: 35 }, size: [6, 10, 6], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
 
       // House base
       { type: "box", position: { x: -30, y: 0, z: 20 }, size: [10, 2, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
@@ -75,7 +75,7 @@ const maps = {
     healthPacks: [
       { id: 'hp1', position: { x: 0, y: 11, z: 35 }, available: true },
       { id: 'hp2', position: { x: -30, y: 8, z: 20 }, available: true },
-      { id: 'hp3', position: { x: 40, y: 20, z: 0 }, available: true }
+      { id: 'hp3', position: { x: 40, y: 21, z: 0 }, available: true }
     ]
   }
 };
