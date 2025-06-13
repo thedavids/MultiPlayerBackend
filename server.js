@@ -285,19 +285,17 @@ function respawnPlayer(roomId, playerId) {
   const room = rooms[roomId];
   if (!room || !room.players[playerId]) return;
 
+  // Notify player (so they can update UI and visuals)
+  io.to(roomId).emit('playerDied', {
+    playerId: playerId,
+    position: { x: room.players[playerId].position.x, y: room.players[playerId].position.y, z: room.players[playerId].position.z }
+  });
+
   // Reset data after delay
   setTimeout(() => {
 
-    // Notify player (so they can update UI and visuals)
-    io.to(roomId).emit('playerDied', {
-      playerId: playerId,
-      position: { x: room.players[playerId].position.x, y: room.players[playerId].position.y, z: room.players[playerId].position.z } 
-    });
-
     const spawnPosition = { x: 0, y: 0, z: 0 }; // change as needed
     room.players[playerId].position = spawnPosition;
-
-    // Optionally, reset health too
     room.players[playerId].health = 100;
 
     // Notify player (so they can update UI and visuals)
@@ -398,9 +396,11 @@ setInterval(() => {
             hitPlayer.health = 100;
           }
 
-          hitPlayer.health -= 10;
-          if (hitPlayer.health <= 0) {
-            respawnPlayer(roomId, hitId);
+          if (hitPlayer.health > 0) {
+            hitPlayer.health -= 10;
+            if (hitPlayer.health <= 0) {
+              respawnPlayer(roomId, hitId);
+            }
           }
           break;
         }
