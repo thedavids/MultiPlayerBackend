@@ -14,68 +14,61 @@ const activeLasers = {}; // roomId -> [{ id, shooterId, origin, direction, posit
 
 const maps = {
   default: {
-    name: "Jump Arena XL",
-    objects: [
-      // Main ground
-      { type: "ground", position: { x: 0, y: -1, z: 0 }, size: [200, 1, 200], texture: "https://www.dailysummary.io/textures/stone.jpg" },
+    "name": "Jump Arena XL",
+    "objects": [
+      { "type": "ground", "position": { "x": 0, "y": -1, "z": 0 }, "size": [200, 1, 200], "texture": "https://www.dailysummary.io/textures/stone.jpg" },
 
-      // Staggered platforms
-      { type: "box", position: { x: -100, y: 0, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
-      { type: "box", position: { x: -95, y: 2, z: -10 }, size: [4, 1, 4], color: "#00ff00" },
-      { type: "box", position: { x: -90, y: 4, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
-      { type: "box", position: { x: -85, y: 6, z: -10 }, size: [4, 1, 4], color: "#ffff00" },
-      { type: "box", position: { x: -80, y: 8, z: -10 }, size: [4, 1, 4], color: "#ff00ff" },
-      { type: "box", position: { x: -75, y: 10, z: -10 }, size: [4, 1, 4], color: "#ff0000" },
-      { type: "box", position: { x: -70, y: 12, z: -10 }, size: [4, 1, 4], color: "#0000ff" },
+      { "type": "box", "position": { "x": -100, "y": 0, "z": -10 }, "size": [4, 1, 4], "color": "#ff0000" },
+      { "type": "box", "position": { "x": -95, "y": 2, "z": -10 }, "size": [4, 1, 4], "color": "#00ff00" },
+      { "type": "box", "position": { "x": -90, "y": 4, "z": -10 }, "size": [4, 1, 4], "color": "#0000ff" },
+      { "type": "box", "position": { "x": -85, "y": 6, "z": -10 }, "size": [4, 1, 4], "color": "#ffff00" },
+      { "type": "box", "position": { "x": -80, "y": 8, "z": -10 }, "size": [4, 1, 4], "color": "#ff00ff" },
+      { "type": "box", "position": { "x": -75, "y": 10, "z": -10 }, "size": [4, 1, 4], "color": "#ff0000" },
+      { "type": "box", "position": { "x": -70, "y": 12, "z": -10 }, "size": [4, 1, 4], "color": "#0000ff" },
 
-      { type: "box", position: { x: -10, y: 0, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -5, y: 2, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 0, y: 4, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 5, y: 6, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 10, y: 8, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 15, y: 10, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 20, y: 12, z: -20 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -10, "y": 0, "z": -20 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -5, "y": 2, "z": -20 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 0, "y": 4, "z": -20 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 5, "y": 6, "z": -20 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 10, "y": 8, "z": -20 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 15, "y": 10, "z": -20 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 20, "y": 12, "z": -20 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
 
-      // Central tower platform
-      { type: "box", position: { x: 0, y: 4, z: 35 }, size: [6, 10, 6], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { "type": "box", "position": { "x": 0, "y": 4, "z": 35 }, "size": [6, 10, 6], "texture": "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
 
-      // House base
-      { type: "box", position: { x: -30, y: 0, z: 20 }, size: [10, 2, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
-      { type: "box", position: { x: -35, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
-      { type: "box", position: { x: -25, y: 3, z: 20 }, size: [1, 6, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
-      { type: "box", position: { x: -30, y: 3, z: 25 }, size: [10, 6, 1], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
-      { type: "box", position: { x: -30, y: 7, z: 20 }, size: [10, 1, 10], texture: "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { "type": "box", "position": { "x": -30, "y": 0, "z": 20 }, "size": [10, 2, 10], "texture": "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { "type": "box", "position": { "x": -35, "y": 3, "z": 20 }, "size": [1, 6, 10], "texture": "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { "type": "box", "position": { "x": -25, "y": 3, "z": 20 }, "size": [1, 6, 10], "texture": "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { "type": "box", "position": { "x": -30, "y": 3, "z": 25 }, "size": [10, 6, 1], "texture": "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
+      { "type": "box", "position": { "x": -30, "y": 7, "z": 20 }, "size": [10, 1, 10], "texture": "https://www.dailysummary.io/textures/brick_diffuse.jpg" },
 
-      // === HUGE second floor ===
-      { type: "box", position: { x: 60, y: 20, z: 0 }, size: [100, 1, 100], texture: "https://www.dailysummary.io/textures/stone.jpg" },
+      { "type": "box", "position": { "x": 60, "y": 20, "z": 0 }, "size": [100, 1, 100], "texture": "https://www.dailysummary.io/textures/stone.jpg" },
 
-      // === Wooden staircase up to it ===
-      { type: "box", position: { x: -26, y: 0, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -24, y: 1, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -22, y: 2, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -20, y: 3, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -18, y: 4, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -16, y: 5, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -14, y: 6, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -12, y: 7, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -10, y: 8, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -8, y: 9, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -6, y: 10, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -4, y: 11, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: -2, y: 12, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 0, y: 13, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 2, y: 14, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 4, y: 15, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 6, y: 16, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 8, y: 17, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 10, y: 18, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
-      { type: "box", position: { x: 12, y: 19, z: 0 }, size: [4, 1, 4], texture: "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" }
+      { "type": "box", "position": { "x": -26, "y": 0, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -24, "y": 1, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -22, "y": 2, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -20, "y": 3, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -18, "y": 4, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -16, "y": 5, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -14, "y": 6, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -12, "y": 7, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -10, "y": 8, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -8, "y": 9, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -6, "y": 10, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -4, "y": 11, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": -2, "y": 12, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 0, "y": 13, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 2, "y": 14, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 4, "y": 15, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 6, "y": 16, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 8, "y": 17, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 10, "y": 18, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" },
+      { "type": "box", "position": { "x": 12, "y": 19, "z": 0 }, "size": [4, 1, 4], "texture": "https://www.dailysummary.io/textures/hardwood2_diffuse.jpg" }
     ],
-
-    healthPacks: [
-      { id: 'hp1', position: { x: 0, y: 11, z: 35 }, available: true },
-      { id: 'hp2', position: { x: -30, y: 8, z: 20 }, available: true },
-      { id: 'hp3', position: { x: 40, y: 21, z: 0 }, available: true }
+    "healthPacks": [
+      { "id": "hp1", "position": { "x": 0, "y": 11, "z": 35 }, "available": true },
+      { "id": "hp2", "position": { "x": -30, "y": 8, "z": 20 }, "available": true },
+      { "id": "hp3", "position": { "x": 40, "y": 21, "z": 0 }, "available": true }
     ]
   }
 };
