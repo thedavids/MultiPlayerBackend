@@ -308,14 +308,15 @@ function cleanupStalePlayer(id) {
   delete playerLastSeen[id];
 }
 
-function respawnPlayer(roomId, playerId) {
+function respawnPlayer(roomId, playerId, shooterId) {
   const room = rooms[roomId];
   if (!room || !room.players[playerId]) return;
 
   // Notify player (so they can update UI and visuals)
   io.to(roomId).emit('playerDied', {
     playerId: playerId,
-    position: { x: room.players[playerId].position.x, y: room.players[playerId].position.y, z: room.players[playerId].position.z }
+    position: { x: room.players[playerId].position.x, y: room.players[playerId].position.y, z: room.players[playerId].position.z },
+    message: `${room.players[shooterId].name} eliminated ${room.players[playerId].name} with his lasers`
   });
 
   // Reset data after delay
@@ -426,7 +427,7 @@ setInterval(() => {
           if (hitPlayer.health > 0) {
             hitPlayer.health -= 10;
             if (hitPlayer.health <= 0) {
-              respawnPlayer(roomId, hitId);
+              respawnPlayer(roomId, hitId, laser.shooterId);
             }
           }
           break;
