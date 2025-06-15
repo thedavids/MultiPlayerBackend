@@ -132,7 +132,7 @@ function rayIntersectsAABB(origin, dir, maxDist, min, max) {
   let tymax = (max.y - origin.y) / dir.y;
   if (tymin > tymax) [tymin, tymax] = [tymax, tymin];
 
-  if ((tmin > tymax) || (tymin > tmax)) return false;
+  if ((tmin > tymax) || (tymin > tmax)) return null;
   if (tymin > tmin) tmin = tymin;
   if (tymax < tmax) tmax = tymax;
 
@@ -140,9 +140,10 @@ function rayIntersectsAABB(origin, dir, maxDist, min, max) {
   let tzmax = (max.z - origin.z) / dir.z;
   if (tzmin > tzmax) [tzmin, tzmax] = [tzmax, tzmin];
 
-  if ((tmin > tzmax) || (tzmin > tmax)) return false;
-  const hitDist = tzmin > tmin ? tzmin : tmin;
-  return hitDist >= 0 && hitDist <= maxDist;
+  if ((tmin > tzmax) || (tzmin > tmax)) return null;
+
+  const hitDist = Math.max(tmin, tzmin);
+  return (hitDist >= 0 && hitDist <= maxDist) ? hitDist : null;
 }
 
 io.on('connection', (socket) => {
@@ -226,55 +227,70 @@ io.on('connection', (socket) => {
     const room = rooms[roomId];
     if (!room || !room.players[socket.id]) return;
 
-    // Ray parameters
     const range = 100;
-    const hitRadius = 2.0;
     const rayEnd = addVec3(origin, scaleVec3(direction, range));
 
     let nearestWallDist = Infinity;
     let wallHitPos = null;
 
-    // ────────────────────
-    // 1) Check walls first
-    // ────────────────────
+    // === 1. Check wall collisions ===
     for (const obj of room.map.objects) {
-      const half = { x: obj.size[0] / 2, y: obj.size[1] / 2, z: obj.size[2] / 2 };
-      const min = { x: obj.position.x - half.x, y: obj.position.y - half.y, z: obj.position.z - half.z };
-      const max = { x: obj.position.x + half.x, y: obj.position.y + half.y, z: obj.position.z + half.z };
+      const half = {
+        x: obj.size[0] / 2,
+        y: obj.size[1] / 2,
+        z: obj.size[2] / 2
+      };
+
+      const min = {
+        x: obj.position.x - half.x,
+        y: obj.position.y - half.y,
+        z: obj.position.z - half.z
+      };
+
+      const max = {
+        x: obj.position.x + half.x,
+        y: obj.position.y + half.y,
+        z: obj.position.z + half.z
+      };
 
       const hit = rayIntersectsAABB(origin, direction, range, min, max);
-      if (hit && hit < nearestWallDist) {
-        nearestWallDist = hit;                                   // distance along the ray
-        wallHitPos = addVec3(origin, scaleVec3(direction, hit)); // exact point
+      if (hit != null && hit < nearestWallDist) {
+        nearestWallDist = hit;
+        wallHitPos = addVec3(origin, scaleVec3(direction, hit));
       }
     }
 
-    // ─────────────────────
-    // 2) Check each player
-    // ─────────────────────
+    // === 2. Check player hitboxes ===
     let hitPlayerId = null;
     let hitPlayerPos = null;
 
-    for (const [pid, player] of Object.entries(room.players)) {
-      if (pid === socket.id) continue;                           // don't hit shooter
+    const playerHalfSize = { x: 0.4, y: 0.9, z: 0.4 }; // adjust for your game
 
-      const hit = segmentSphereIntersect(origin, rayEnd, player.position, hitRadius);
-      if (hit) {
-        // Estimate distance along ray to player centre
-        const dist = distanceVec3(origin, player.position);
-        if (dist < nearestWallDist) {                            // player is in front of wall
-          nearestWallDist = dist;
-          hitPlayerId = pid;
-          hitPlayerPos = { ...player.position };
-        }
+    for (const [pid, player] of Object.entries(room.players)) {
+      if (pid === socket.id) continue;
+
+      const min = {
+        x: player.position.x - playerHalfSize.x,
+        y: player.position.y - playerHalfSize.y,
+        z: player.position.z - playerHalfSize.z
+      };
+
+      const max = {
+        x: player.position.x + playerHalfSize.x,
+        y: player.position.y + playerHalfSize.y,
+        z: player.position.z + playerHalfSize.z
+      };
+
+      const hitDist = rayIntersectsAABB(origin, direction, range, min, max);
+      if (hitDist != null && hitDist < nearestWallDist) {
+        nearestWallDist = hitDist;
+        hitPlayerId = pid;
+        hitPlayerPos = addVec3(origin, scaleVec3(direction, hitDist));
       }
     }
 
-    // ─────────────────────
-    // 3) Act on the nearest
-    // ─────────────────────
+    // === 3. Act on nearest hit ===
     if (hitPlayerId) {
-      // Damage & broadcast
       const victim = room.players[hitPlayerId];
       victim.health = (victim.health || 100) - 5;
 
@@ -282,26 +298,22 @@ io.on('connection', (socket) => {
         shooterId: socket.id,
         targetId: hitPlayerId,
         position: hitPlayerPos,
-        origin: origin,
-        direction: direction,
+        origin,
+        direction,
         health: Math.max(0, victim.health)
       });
 
       if (victim.health <= 0) {
-        respawnPlayer(roomId, hitPlayerId, socket.id, 'machine gunned');
+        respawnPlayer(roomId, hitPlayerId, socket.id, "machine gunned");
       }
-    }
-    else if (wallHitPos) {
-      // Blocked by wall: tell clients so they can spawn impact FX
+    } else if (wallHitPos) {
       io.to(roomId).emit("machinegunBlocked", {
         shooterId: socket.id,
-        origin: origin,
-        direction: direction
+        origin,
+        direction
       });
     }
-    // else: nothing hit (bullet ran out of range)
   });
-
 
   socket.on('disconnect', () => {
     handleDisconnect(socket);
@@ -451,7 +463,7 @@ setInterval(() => {
           z: obj.position.z + halfSize.z
         };
 
-        if (rayIntersectsAABB(laser.prevPosition, laser.direction, moveDistance, min, max)) {
+        if (rayIntersectsAABB(laser.prevPosition, laser.direction, moveDistance, min, max) != null) {
           blocked = true;
           break;
         }
