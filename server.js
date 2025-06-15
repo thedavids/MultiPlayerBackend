@@ -408,6 +408,11 @@ function respawnPlayer(roomId, playerId, shooterId, action) {
   // Reset data after delay
   setTimeout(() => {
 
+    if (room.players[playerId] == null) {
+      cleanupStalePlayer(playerId);
+      return;
+    }
+    
     const spawnPosition = { x: 0, y: 0, z: 0 }; // change as needed
     room.players[playerId].position = spawnPosition;
     room.players[playerId].health = 100;
