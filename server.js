@@ -228,7 +228,7 @@ io.on('connection', (socket) => {
 
     // Ray parameters
     const range = 100;
-    const hitRadius = 0.6;
+    const hitRadius = 1.2;
     const rayEnd = addVec3(origin, scaleVec3(direction, range));
 
     let nearestWallDist = Infinity;
