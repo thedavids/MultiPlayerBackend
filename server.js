@@ -228,7 +228,7 @@ io.on('connection', (socket) => {
 
     // Ray parameters
     const range = 100;
-    const hitRadius = 1.2;
+    const hitRadius = 2.0;
     const rayEnd = addVec3(origin, scaleVec3(direction, range));
 
     let nearestWallDist = Infinity;
@@ -278,15 +278,17 @@ io.on('connection', (socket) => {
       const victim = room.players[hitPlayerId];
       victim.health = (victim.health || 100) - 5;
 
-      io.to(roomId).emit("laserHit", {
+      io.to(roomId).emit("machinegunHit", {
         shooterId: socket.id,
         targetId: hitPlayerId,
         position: hitPlayerPos,
+        origin: origin,
+        direction: direction,
         health: Math.max(0, victim.health)
       });
 
       if (victim.health <= 0) {
-        respawnPlayer(roomId, hitPlayerId, socket.id);
+        respawnPlayer(roomId, hitPlayerId, socket.id, 'machine gunned');
       }
     }
     else if (wallHitPos) {
@@ -380,7 +382,7 @@ function cleanupStalePlayer(id) {
   delete playerLastSeen[id];
 }
 
-function respawnPlayer(roomId, playerId, shooterId) {
+function respawnPlayer(roomId, playerId, shooterId, action) {
   const room = rooms[roomId];
   if (!room || !room.players[playerId]) return;
 
@@ -388,7 +390,7 @@ function respawnPlayer(roomId, playerId, shooterId) {
   io.to(roomId).emit('playerDied', {
     playerId: playerId,
     position: { x: room.players[playerId].position.x, y: room.players[playerId].position.y, z: room.players[playerId].position.z },
-    message: `${room.players[shooterId].name} eliminated ${room.players[playerId].name} with his lasers`
+    message: `${room.players[shooterId].name} ${action} ${room.players[playerId].name} with his lasers`
   });
 
   // Reset data after delay
@@ -499,7 +501,7 @@ setInterval(() => {
           if (hitPlayer.health > 0) {
             hitPlayer.health -= 10;
             if (hitPlayer.health <= 0) {
-              respawnPlayer(roomId, hitId, laser.shooterId);
+              respawnPlayer(roomId, hitId, laser.shooterId, 'blasted');
             }
           }
           break;
