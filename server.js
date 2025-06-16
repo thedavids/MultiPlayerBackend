@@ -188,6 +188,9 @@ io.on('connection', (socket) => {
           rotation
         });
         tryPickupHealthPack(roomId, socket.id);
+        if (position.y < -1000) {
+          respawnPlayer(roomId, socket.id, socket.id, 'fell to his death');
+        }
       }
     } catch (err) {
       console.error("Error handling move:", err);
@@ -402,7 +405,9 @@ function respawnPlayer(roomId, playerId, shooterId, action) {
   io.to(roomId).emit('playerDied', {
     playerId: playerId,
     position: { x: room.players[playerId].position.x, y: room.players[playerId].position.y, z: room.players[playerId].position.z },
-    message: `${room.players[shooterId].name} ${action} ${room.players[playerId].name} with his lasers`
+    message: shooterId !== playerId ?
+      `${room.players[shooterId].name} ${action} ${room.players[playerId].name}` :
+      `${room.players[playerId].name} ${action}`
   });
 
   // Reset data after delay
@@ -412,7 +417,7 @@ function respawnPlayer(roomId, playerId, shooterId, action) {
       cleanupStalePlayer(playerId);
       return;
     }
-    
+
     const spawnPosition = { x: 0, y: 0, z: 0 }; // change as needed
     room.players[playerId].position = spawnPosition;
     room.players[playerId].health = 100;
