@@ -188,7 +188,8 @@ io.on('connection', (socket) => {
           rotation
         });
         tryPickupHealthPack(roomId, socket.id);
-        if (position.y < -1000) {
+        if (position.y < -500 && room.players[socket.id].health > 0) {
+          room.players[socket.id].health = 0;
           respawnPlayer(roomId, socket.id, socket.id, 'fell to his death');
         }
       }
