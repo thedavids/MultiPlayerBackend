@@ -356,6 +356,9 @@ io.on('connection', (socket) => {
 function handleDisconnect(socket) {
   for (const roomId in rooms) {
     if (rooms[roomId].players[socket.id]) {
+      if (activeLasers[roomId]) {
+        activeLasers[roomId] = activeLasers[roomId].filter(l => l.shooterId !== socket.id);
+      }
       delete rooms[roomId].players[socket.id];
       io.to(roomId).emit('playerDisconnected', socket.id);
       console.log(`Client disconnected: ${socket.id}`);
@@ -425,7 +428,7 @@ function respawnPlayer(roomId, playerId, shooterId, action) {
     const spawnPosition = { x: 0, y: 0, z: 0 }; // change as needed
     room.players[playerId].position = spawnPosition;
     room.players[playerId].health = 100;
-    room.players[playerId].isDead = true;
+    room.players[playerId].isDead = false;
 
     // Notify player (so they can update UI and visuals)
     io.to(roomId).emit('respawn', {
@@ -445,112 +448,119 @@ function respawnPlayer(roomId, playerId, shooterId, action) {
   }, 1000);
 }
 
-setInterval(() => {
+function updateRoomLasers(roomId) {
   const now = Date.now();
 
   const delta = 1000 / 60.0; // ~16ms per tick
-  for (const roomId in activeLasers) {
-    const lasers = activeLasers[roomId];
-    const room = rooms[roomId];
-    if (!room) continue;
+  const lasers = activeLasers[roomId];
+  const room = rooms[roomId];
+  if (!room || !lasers) return;
 
-    for (let i = lasers.length - 1; i >= 0; i--) {
-      const laser = lasers[i];
-      const moveDistance = (laser.speed * delta) / 1000;
+  for (let i = lasers.length - 1; i >= 0; i--) {
+    const laser = lasers[i];
+    const moveDistance = (laser.speed * delta) / 1000;
 
-      // Track previous position for swept collision
-      laser.prevPosition = { ...laser.position };
+    // Track previous position for swept collision
+    laser.prevPosition = { ...laser.position };
 
-      // Check if laser hit a map object (using AABB)
-      let blocked = false;
-      for (const obj of room.map.objects) {
-        const halfSize = {
-          x: obj.size[0] / 2,
-          y: obj.size[1] / 2,
-          z: obj.size[2] / 2
-        };
-        const min = {
-          x: obj.position.x - halfSize.x,
-          y: obj.position.y - halfSize.y,
-          z: obj.position.z - halfSize.z
-        };
-        const max = {
-          x: obj.position.x + halfSize.x,
-          y: obj.position.y + halfSize.y,
-          z: obj.position.z + halfSize.z
-        };
+    // Check if laser hit a map object (using AABB)
+    let blocked = false;
+    for (const obj of room.map.objects) {
+      const halfSize = {
+        x: obj.size[0] / 2,
+        y: obj.size[1] / 2,
+        z: obj.size[2] / 2
+      };
+      const min = {
+        x: obj.position.x - halfSize.x,
+        y: obj.position.y - halfSize.y,
+        z: obj.position.z - halfSize.z
+      };
+      const max = {
+        x: obj.position.x + halfSize.x,
+        y: obj.position.y + halfSize.y,
+        z: obj.position.z + halfSize.z
+      };
 
-        if (rayIntersectsAABB(laser.prevPosition, laser.direction, moveDistance, min, max) != null) {
-          blocked = true;
-          break;
-        }
+      if (rayIntersectsAABB(laser.prevPosition, laser.direction, moveDistance, min, max) != null) {
+        blocked = true;
+        break;
       }
+    }
 
-      if (blocked) {
-        // Inform all players so they can remove the laser visually
-        io.to(roomId).emit('laserBlocked', {
-          id: laser.id,
-          position: laser.position
+    if (blocked) {
+      // Inform all players so they can remove the laser visually
+      io.to(roomId).emit('laserBlocked', {
+        id: laser.id,
+        position: laser.position
+      });
+
+      lasers.splice(i, 1);
+      continue; // skip player hit checks
+    }
+
+    // Move laser forward
+    laser.position.x += laser.direction.x * moveDistance;
+    laser.position.y += laser.direction.y * moveDistance;
+    laser.position.z += laser.direction.z * moveDistance;
+    laser.life -= delta;
+
+    // Check for hit
+    const hitRadius = 0.6;
+    let hitId = null;
+    let hitPlayer = null;
+
+    for (const [pid, player] of Object.entries(room.players)) {
+      if (pid === laser.shooterId) continue;
+
+      // Swept hit detection (segment-sphere)
+      const hit = segmentSphereIntersect(
+        laser.prevPosition,
+        laser.position,
+        player.position,
+        hitRadius
+      );
+
+      if (hit) {
+        hitId = pid;
+        hitPlayer = player;
+
+        if (typeof hitPlayer.health !== 'number') {
+          hitPlayer.health = 100;
+        }
+
+        if (hitPlayer.health > 0) {
+          hitPlayer.health -= 10;
+          if (hitPlayer.health <= 0) {
+            respawnPlayer(roomId, hitId, laser.shooterId, 'blasted');
+          }
+        }
+        break;
+      }
+    }
+
+    if (hitId || laser.life <= 0) {
+      // Remove laser
+      lasers.splice(i, 1);
+
+      // Inform clients
+      if (hitId) {
+        io.to(roomId).emit('laserHit', {
+          shooterId: laser.shooterId,
+          targetId: hitId,
+          position: laser.position,
+          health: hitPlayer.health
         });
-
-        lasers.splice(i, 1);
-        continue; // skip player hit checks
       }
+    }
+  }
 
-      // Move laser forward
-      laser.position.x += laser.direction.x * moveDistance;
-      laser.position.y += laser.direction.y * moveDistance;
-      laser.position.z += laser.direction.z * moveDistance;
-      laser.life -= delta;
+}
 
-      // Check for hit
-      const hitRadius = 0.6;
-      let hitId = null;
-      let hitPlayer = null;
-
-      for (const [pid, player] of Object.entries(room.players)) {
-        if (pid === laser.shooterId) continue;
-
-        // Swept hit detection (segment-sphere)
-        const hit = segmentSphereIntersect(
-          laser.prevPosition,
-          laser.position,
-          player.position,
-          hitRadius
-        );
-
-        if (hit) {
-          hitId = pid;
-          hitPlayer = player;
-
-          if (typeof hitPlayer.health !== 'number') {
-            hitPlayer.health = 100;
-          }
-
-          if (hitPlayer.health > 0) {
-            hitPlayer.health -= 10;
-            if (hitPlayer.health <= 0) {
-              respawnPlayer(roomId, hitId, laser.shooterId, 'blasted');
-            }
-          }
-          break;
-        }
-      }
-
-      if (hitId || laser.life <= 0) {
-        // Remove laser
-        lasers.splice(i, 1);
-
-        // Inform clients
-        if (hitId) {
-          io.to(roomId).emit('laserHit', {
-            shooterId: laser.shooterId,
-            targetId: hitId,
-            position: laser.position,
-            health: hitPlayer.health
-          });
-        }
-      }
+setInterval(() => {
+  for (const roomId in activeLasers) {
+    if (activeLasers[roomId]?.length > 0) {
+      updateRoomLasers(roomId);
     }
   }
 }, 1000 / 60); // 60 FPS
