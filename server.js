@@ -150,24 +150,24 @@ io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
   playerLastSeen[socket.id] = Date.now();
 
-  socket.on('createRoom', ({ name }, callback) => {
+  socket.on('createRoom', ({ name, modelName }, callback) => {
     const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
     rooms[roomId] = {
       players: {},
       map: maps.default
     };
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 }, health: 100 };
+    rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 }, health: 100, modelName };
     console.warn("Player created room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
     callback({ roomId, health: 100 });
     io.to(roomId).emit('playerList', rooms[roomId].players);
   });
 
-  socket.on('joinRoom', ({ roomId, name }, callback) => {
+  socket.on('joinRoom', ({ roomId, name, modelName }, callback) => {
     if (!rooms[roomId]) return callback({ error: 'Room not found' });
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 }, health: 100 };
+    rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 }, health: 100, modelName };
     console.warn("Player joined room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
     callback({ success: true, health: 100 });
