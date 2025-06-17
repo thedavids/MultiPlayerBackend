@@ -176,7 +176,7 @@ io.on('connection', (socket) => {
 
   socket.on('move', (data) => {
     try {
-      const { roomId, position, rotation } = data;
+      const { roomId, position, rotation, isIdle, isGrounded } = data;
       if (!roomId || !position) return;
       const room = rooms[roomId];
       if (room?.players[socket.id]) {
@@ -185,7 +185,9 @@ io.on('connection', (socket) => {
         socket.to(roomId).emit('playerMoved', {
           id: socket.id,
           position,
-          rotation
+          rotation,
+          isIdle,
+          isGrounded
         });
         tryPickupHealthPack(roomId, socket.id);
         if (position.y < -100 && room.players[socket.id].health > 0 && !room.players[socket.id].isDead) {
