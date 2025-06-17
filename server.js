@@ -438,7 +438,9 @@ function respawnPlayer(roomId, playerId, shooterId, action) {
     io.to(roomId).emit('playerMoved', {
       id: playerId,
       position: spawnPosition,
-      rotation: { x: 0, y: 0, z: 0 }
+      rotation: { x: 0, y: 0, z: 0 },
+      isIdle: true,
+      isGrounded: true
     });
   }, 1000);
 }
