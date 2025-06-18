@@ -8,6 +8,7 @@ export class OctreeNode {
 
         this.objects = [];
         this.children = null;
+        this.once = false;
     }
 
     getAABB() {
@@ -63,6 +64,17 @@ export class OctreeNode {
         }
 
         // Otherwise, keep object in this node
+        if (object.name.includes('ground')) {
+            console.log('🧱 Ground inserted:', JSON.parse(JSON.stringify({
+                name: object.name,
+                position: object.position.clone(),
+                box: object.userData.box.clone(),
+                size: object.size,
+                objAABB: objAABB,
+                rootAABB: rootAABB,
+                depth: this.depth
+            })));
+        }
         this.objects.push(object);
         return true;
     }
@@ -79,6 +91,7 @@ export class OctreeNode {
     subdivide() {
         const half = this.size / 2;
         const quarter = half / 2;
+
         const offsets = [
             [-1, -1, -1], [1, -1, -1], [-1, 1, -1], [1, 1, -1],
             [-1, -1, 1], [1, -1, 1], [-1, 1, 1], [1, 1, 1],
@@ -98,19 +111,30 @@ export class OctreeNode {
             );
         });
 
-        for (let i = 0; i < this.objects.length; i++) {
-            const obj = this.objects[i];
+        // Move only fully contained objects into children
+        const remaining = [];
+
+        for (const obj of this.objects) {
+            const objAABB = this.computeObjectAABB(obj);
+            let inserted = false;
+
             for (const child of this.children) {
-                if (child.insert(obj, false)) {
-                    this.objects[i] = null; // Mark for cleanup
+                const childAABB = child.getAABB();
+                if (this.fullyContains(childAABB, objAABB)) {
+                    child.insert(obj, false); // do not recurse as root
+                    inserted = true;
                     break;
                 }
             }
+
+            if (!inserted) {
+                remaining.push(obj); // stay in current node
+            }
         }
 
-        // Remove all null-marked entries
-        this.objects = this.objects.filter(obj => obj !== null);
+        this.objects = remaining;
     }
+
 
     computeObjectAABB(obj) {
         const half = {
@@ -161,6 +185,13 @@ export class OctreeNode {
 
         for (const obj of this.objects) {
             const objAABB = this.computeObjectAABB(obj);
+            if (obj.name.indexOf('ground') !== -1) {
+                if (!this.once) {
+
+                    console.log(queryBox, objAABB);
+                    this.once = true;
+                }
+            }
             if (this.intersectsAABB(objAABB, queryBox)) {
                 if (!filterFn || filterFn(obj)) {
                     result.push(obj);
@@ -179,7 +210,7 @@ export class OctreeNode {
 
     queryCapsule(capsule, result = [], filterFn = null) {
         const r = capsule.radius;
-        const padding = 10; // small epsilon to catch borderline overlaps
+        const padding = 0.5; // small epsilon to catch borderline overlaps
 
         const capsuleAABB = {
             min: {
