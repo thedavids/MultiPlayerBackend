@@ -27,17 +27,26 @@ export class OctreeNode {
     }
 
     intersects(aabb) {
+        const epsilon = 1e-6; // tiny buffer
         const nodeAABB = this.getAABB();
         return !(
-            nodeAABB.max.x < aabb.min.x || nodeAABB.min.x > aabb.max.x ||
-            nodeAABB.max.y < aabb.min.y || nodeAABB.min.y > aabb.max.y ||
-            nodeAABB.max.z < aabb.min.z || nodeAABB.min.z > aabb.max.z
+            nodeAABB.max.x < aabb.min.x - epsilon || nodeAABB.min.x > aabb.max.x + epsilon ||
+            nodeAABB.max.y < aabb.min.y - epsilon || nodeAABB.min.y > aabb.max.y + epsilon ||
+            nodeAABB.max.z < aabb.min.z - epsilon || nodeAABB.min.z > aabb.max.z + epsilon
         );
     }
 
-    insert(object) {
+    insert(object, isRoot = true) {
         const objAABB = this.computeObjectAABB(object);
-        if (!this.intersects(objAABB)) return false;
+        const rootAABB = this.getAABB();
+
+        const intersecting = this.intersects(objAABB);
+        if (!intersecting) {
+            if (isRoot) {
+                console.warn('🚫 INSERT REJECTED (root):', object.name, objAABB, rootAABB, this.size, this.center);
+            }
+            return false;
+        }
 
         // Subdivide if needed
         if (!this.children && this.objects.length >= this.maxObjects && this.depth < this.maxDepth) {
@@ -48,7 +57,7 @@ export class OctreeNode {
         if (this.children) {
             for (const child of this.children) {
                 if (this.fullyContains(child.getAABB(), objAABB)) {
-                    return child.insert(object);
+                    return child.insert(object, false); // not root anymore
                 }
             }
         }
@@ -57,6 +66,7 @@ export class OctreeNode {
         this.objects.push(object);
         return true;
     }
+
 
     fullyContains(container, target) {
         return (
@@ -91,7 +101,7 @@ export class OctreeNode {
         for (let i = 0; i < this.objects.length; i++) {
             const obj = this.objects[i];
             for (const child of this.children) {
-                if (child.insert(obj)) {
+                if (child.insert(obj, false)) {
                     this.objects[i] = null; // Mark for cleanup
                     break;
                 }
@@ -167,10 +177,9 @@ export class OctreeNode {
         return result;
     }
 
-
     queryCapsule(capsule, result = [], filterFn = null) {
         const r = capsule.radius;
-        const padding = 0.05; // small epsilon to catch borderline overlaps
+        const padding = 10; // small epsilon to catch borderline overlaps
 
         const capsuleAABB = {
             min: {
@@ -263,17 +272,20 @@ export function computeMapBounds(objects) {
         max.z = Math.max(max.z, objMax.z);
     }
 
+    // Final center of the entire scene
     const center = {
         x: (min.x + max.x) / 2,
         y: (min.y + max.y) / 2,
         z: (min.z + max.z) / 2
     };
 
-    const size = Math.max(
-        max.x - min.x,
-        max.y - min.y,
-        max.z - min.z
-    ) + 20;
+    // Cube size large enough to contain the whole scene + margin
+    const padding = 10;
+    const spanX = max.x - min.x + 2 * padding;
+    const spanY = max.y - min.y + 2 * padding;
+    const spanZ = max.z - min.z + 2 * padding;
+
+    const size = Math.max(spanX, spanY, spanZ);
 
     return { center, size };
 }
