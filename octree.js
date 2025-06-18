@@ -1,4 +1,4 @@
-class OctreeNode {
+export class OctreeNode {
     constructor(center, size, depth = 0, maxDepth = 5, maxObjects = 8) {
         this.center = center; // { x, y, z }
         this.size = size;     // scalar length of cube's edge
@@ -228,7 +228,7 @@ class OctreeNode {
     }
 }
 
-function computeMapBounds(objects) {
+export function computeMapBounds(objects) {
     let min = { x: Infinity, y: Infinity, z: Infinity };
     let max = { x: -Infinity, y: -Infinity, z: -Infinity };
 
@@ -276,14 +276,4 @@ function computeMapBounds(objects) {
     ) + 20;
 
     return { center, size };
-}
-
-// Export pattern that works in both environments
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  // Node.js
-  module.exports = { Octree, computeMapBounds };
-} else {
-  // Browser
-  window.OctreeNode = OctreeNode;
-  window.computeMapBounds = computeMapBounds;
 }
