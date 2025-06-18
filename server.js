@@ -169,27 +169,47 @@ function rayIntersectsAABB(origin, dir, maxDist, min, max) {
   return (hitDist >= 0 && hitDist <= maxDist) ? hitDist : null;
 }
 
+function ensureOctreeForMap(map) {
+  if (!map.octree) {
+    const bounds = computeMapBounds(map.objects);
+    const octree = new OctreeNode(bounds.center, bounds.size * 1.2);
+    for (const mesh of map.objects) {
+      octree.insert(mesh);
+    }
+    map.octree = octree;
+  }
+}
+
 io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
   playerLastSeen[socket.id] = Date.now();
 
   socket.on('createRoom', ({ name, modelName }, callback) => {
+
+    // Basic input validation
+    if (typeof name !== 'string' || typeof modelName !== 'string') {
+      return callback({ error: 'Invalid input' });
+    }
+
+    // Trim and limit length and allow only basic alphanumeric, dashes, underscores, and spaces
+    name = name.trim().substring(0, 32);
+    modelName = modelName.trim().substring(0, 32);
+    const safeName = name.replace(/[^\w\s-]/g, '');
+    const safeModel = modelName.replace(/[^\w-]/g, '');
+
     const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
+
+    const map = maps.default;
+    ensureOctreeForMap(map);
+
     rooms[roomId] = {
       players: {},
-      map: maps.default
+      map,
+      octree: map.octree
     };
-    if (rooms[roomId].octree == null) {
-      const mapObjects = rooms[roomId].map.objects;
-      const bounds = computeMapBounds(mapObjects);
-      const octree = new OctreeNode(bounds.center, bounds.size * 1.2);
-      for (const mesh of mapObjects) {
-        octree.insert(mesh);
-      }
-      rooms[roomId].octree = octree;
-    }
+
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 }, health: 100, modelName };
+    rooms[roomId].players[socket.id] = { safeName, position: { x: 0, y: 0, z: 0 }, health: 100, safeModel };
     console.warn("Player created room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
     callback({ roomId, health: 100 });
@@ -198,8 +218,20 @@ io.on('connection', (socket) => {
 
   socket.on('joinRoom', ({ roomId, name, modelName }, callback) => {
     if (!rooms[roomId]) return callback({ error: 'Room not found' });
+
+    // Basic input validation
+    if (typeof name !== 'string' || typeof modelName !== 'string') {
+      return callback({ error: 'Invalid input' });
+    }
+
+    // Trim and limit length and allow only basic alphanumeric, dashes, underscores, and spaces
+    name = name.trim().substring(0, 32);
+    modelName = modelName.trim().substring(0, 32);
+    const safeName = name.replace(/[^\w\s-]/g, '');
+    const safeModel = modelName.replace(/[^\w-]/g, '');
+
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 }, health: 100, modelName };
+    rooms[roomId].players[socket.id] = { safeName, position: { x: 0, y: 0, z: 0 }, health: 100, safeModel };
     console.warn("Player joined room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
     callback({ success: true, health: 100 });
@@ -240,6 +272,7 @@ io.on('connection', (socket) => {
     const room = rooms[roomId];
     if (!room || !room.players[socket.id]) return;
 
+    const now = Date.now();
     const laser = {
       id,
       shooterId: socket.id,
@@ -247,7 +280,8 @@ io.on('connection', (socket) => {
       direction,
       position: { ...origin },
       life: 2000, // ms to live
-      speed: 100  // units/sec
+      speed: 100,  // units/sec
+      lastUpdate: now
     };
 
     if (!activeLasers[roomId]) activeLasers[roomId] = [];
@@ -384,8 +418,9 @@ function handleDisconnect(socket) {
       io.to(roomId).emit('playerDisconnected', socket.id);
       console.log(`Client disconnected: ${socket.id}`);
       if (Object.keys(rooms[roomId].players).length === 0) {
-        delete rooms[roomId];
         delete activeLasers[roomId];
+        delete rooms[roomId]?.octree;
+        delete rooms[roomId];
         console.warn("Room deleted", roomId);
       }
       break;
@@ -417,8 +452,9 @@ function cleanupStalePlayer(id) {
       io.to(roomId).emit('playerDisconnected', id);
       console.log(`Client disconnected: ${socket.id}`);
       if (Object.keys(rooms[roomId].players).length === 0) {
-        delete rooms[roomId];
         delete activeLasers[roomId];
+        delete rooms[roomId];
+        delete rooms[roomId]?.octree;
         console.warn("Room deleted (stale cleanup):", roomId);
       }
       break;
@@ -474,13 +510,17 @@ function respawnPlayer(roomId, playerId, shooterId, action) {
 function updateRoomLasers(roomId) {
   const now = Date.now();
 
-  const delta = 1000 / 60.0; // ~16ms per tick
   const lasers = activeLasers[roomId];
   const room = rooms[roomId];
   if (!room || !lasers) return;
 
   for (let i = lasers.length - 1; i >= 0; i--) {
     const laser = lasers[i];
+    const delta = now - (laser.lastUpdate || now); // milliseconds since last update
+
+    laser.life -= delta;
+    laser.lastUpdate = now;
+
     const moveDistance = (laser.speed * delta) / 1000;
 
     // Track previous position for swept collision
@@ -515,7 +555,6 @@ function updateRoomLasers(roomId) {
     laser.position.x += laser.direction.x * moveDistance;
     laser.position.y += laser.direction.y * moveDistance;
     laser.position.z += laser.direction.z * moveDistance;
-    laser.life -= delta;
 
     // Check for hit
     const hitRadius = 0.6;
@@ -566,7 +605,6 @@ function updateRoomLasers(roomId) {
       }
     }
   }
-
 }
 
 setInterval(() => {
