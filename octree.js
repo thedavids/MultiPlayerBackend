@@ -185,7 +185,7 @@ export class OctreeNode {
 
         for (const obj of this.objects) {
             const objAABB = this.computeObjectAABB(obj);
-            if (obj.name.indexOf('ground') !== -1) {
+            if (typeof obj.name === 'string' && obj.name.indexOf('ground') !== -1) {
                 if (!this.once) {
 
                     console.log(queryBox, objAABB);
