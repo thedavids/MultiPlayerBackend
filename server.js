@@ -124,6 +124,28 @@ function segmentSphereIntersect(p1, p2, center, radius) {
   return (t1 >= 0 && t1 <= 1) || (t2 >= 0 && t2 <= 1);
 }
 
+function getAABB(obj) {
+  const half = {
+    x: obj.size[0] / 2,
+    y: obj.size[1] / 2,
+    z: obj.size[2] / 2
+  };
+
+  const min = {
+    x: obj.position.x - half.x,
+    y: obj.position.y - half.y,
+    z: obj.position.z - half.z
+  };
+
+  const max = {
+    x: obj.position.x + half.x,
+    y: obj.position.y + half.y,
+    z: obj.position.z + half.z
+  };
+
+  return { min, max };
+}
+
 function rayIntersectsAABB(origin, dir, maxDist, min, max) {
   let tmin = (min.x - origin.x) / dir.x;
   let tmax = (max.x - origin.x) / dir.x;
@@ -245,36 +267,25 @@ io.on('connection', (socket) => {
     if (!room || !room.players[socket.id]) return;
 
     const range = 100;
-    const rayEnd = addVec3(origin, scaleVec3(direction, range));
-
     let nearestWallDist = Infinity;
     let wallHitPos = null;
 
-    // === 1. Check wall collisions ===
-    for (const obj of room.map.objects) {
-      const half = {
-        x: obj.size[0] / 2,
-        y: obj.size[1] / 2,
-        z: obj.size[2] / 2
-      };
+    const nearbyObjects = room.octree.queryRay(origin, direction, range);
 
-      const min = {
-        x: obj.position.x - half.x,
-        y: obj.position.y - half.y,
-        z: obj.position.z - half.z
-      };
+    const intersectables = nearbyObjects
+      .map(obj => {
+        const { min, max } = getAABB(obj);
+        const dist = rayIntersectsAABB(origin, direction, range, min, max);
+        return dist != null ? { obj, dist, min, max } : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.dist - b.dist);
 
-      const max = {
-        x: obj.position.x + half.x,
-        y: obj.position.y + half.y,
-        z: obj.position.z + half.z
-      };
-
-      const hit = rayIntersectsAABB(origin, direction, range, min, max);
-      if (hit != null && hit < nearestWallDist) {
-        nearestWallDist = hit;
-        wallHitPos = addVec3(origin, scaleVec3(direction, hit));
-      }
+    // Find the nearest hit
+    for (const { dist, min, max, obj } of intersectables) {
+      nearestWallDist = dist;
+      wallHitPos = addVec3(origin, scaleVec3(direction, dist));
+      break; // early exit
     }
 
     // === 2. Check player hitboxes ===
