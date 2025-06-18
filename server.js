@@ -192,10 +192,10 @@ io.on('connection', (socket) => {
     }
 
     // Trim and limit length and allow only basic alphanumeric, dashes, underscores, and spaces
-    name = name.trim().substring(0, 32);
-    modelName = modelName.trim().substring(0, 32);
+    name = name.trim().substring(0, 64);
+    modelName = modelName.trim().substring(0, 64);
     const safeName = name.replace(/[^\w\s-]/g, '');
-    const safeModel = modelName.replace(/[^\w-]/g, '');
+    const safeModel = modelName.replace(/[^\w.-]/g, '');
 
     const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
 
@@ -225,10 +225,10 @@ io.on('connection', (socket) => {
     }
 
     // Trim and limit length and allow only basic alphanumeric, dashes, underscores, and spaces
-    name = name.trim().substring(0, 32);
-    modelName = modelName.trim().substring(0, 32);
+    name = name.trim().substring(0, 64);
+    modelName = modelName.trim().substring(0, 64);
     const safeName = name.replace(/[^\w\s-]/g, '');
-    const safeModel = modelName.replace(/[^\w-]/g, '');
+    const safeModel = modelName.replace(/[^\w.-]/g, '');
 
     socket.join(roomId);
     rooms[roomId].players[socket.id] = { name: safeName, position: { x: 0, y: 0, z: 0 }, health: 100, modelName: safeModel };
