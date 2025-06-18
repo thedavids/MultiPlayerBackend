@@ -385,6 +385,7 @@ function handleDisconnect(socket) {
       console.log(`Client disconnected: ${socket.id}`);
       if (Object.keys(rooms[roomId].players).length === 0) {
         delete rooms[roomId];
+        delete activeLasers[roomId];
         console.warn("Room deleted", roomId);
       }
       break;
@@ -417,6 +418,7 @@ function cleanupStalePlayer(id) {
       console.log(`Client disconnected: ${socket.id}`);
       if (Object.keys(rooms[roomId].players).length === 0) {
         delete rooms[roomId];
+        delete activeLasers[roomId];
         console.warn("Room deleted (stale cleanup):", roomId);
       }
       break;
