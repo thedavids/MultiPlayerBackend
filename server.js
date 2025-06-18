@@ -157,6 +157,15 @@ io.on('connection', (socket) => {
       players: {},
       map: maps.default
     };
+    if (rooms[roomId].octree == null) {
+      const mapObjects = rooms[roomId].map.objects;
+      const bounds = computeMapBounds(mapObjects);
+      const octree = new OctreeNode(bounds.center, bounds.size * 1.2);
+      for (const mesh of mapObjects) {
+        octree.insert(mesh);
+      }
+      rooms[roomId].octree = octree;
+    }
     socket.join(roomId);
     rooms[roomId].players[socket.id] = { name, position: { x: 0, y: 0, z: 0 }, health: 100, modelName };
     console.warn("Player created room", socket.id);
