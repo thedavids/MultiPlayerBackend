@@ -281,8 +281,9 @@ function computeMapBounds(objects) {
 // Export pattern that works in both environments
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   // Node.js
-  module.exports = OctreeNode;
+  module.exports = { Octree, computeMapBounds };
 } else {
   // Browser
   window.OctreeNode = OctreeNode;
+  window.computeMapBounds = computeMapBounds;
 }
