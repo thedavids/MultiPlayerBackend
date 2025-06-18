@@ -484,24 +484,13 @@ function updateRoomLasers(roomId) {
     // Track previous position for swept collision
     laser.prevPosition = { ...laser.position };
 
-    // Check if laser hit a map object (using AABB)
+    // Get nearby objects using the octree
+    const nearbyObjects = room.octree.queryRay(laser.prevPosition, laser.direction, moveDistance);
+
     let blocked = false;
-    for (const obj of room.map.objects) {
-      const halfSize = {
-        x: obj.size[0] / 2,
-        y: obj.size[1] / 2,
-        z: obj.size[2] / 2
-      };
-      const min = {
-        x: obj.position.x - halfSize.x,
-        y: obj.position.y - halfSize.y,
-        z: obj.position.z - halfSize.z
-      };
-      const max = {
-        x: obj.position.x + halfSize.x,
-        y: obj.position.y + halfSize.y,
-        z: obj.position.z + halfSize.z
-      };
+
+    for (const obj of nearbyObjects) {
+      const { min, max } = getAABB(obj);
 
       if (rayIntersectsAABB(laser.prevPosition, laser.direction, moveDistance, min, max) != null) {
         blocked = true;
