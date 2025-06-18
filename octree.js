@@ -64,7 +64,7 @@ export class OctreeNode {
         }
 
         // Otherwise, keep object in this node
-        if (object.name.includes('ground')) {
+        if (typeof object.name === 'string' && object.name.indexOf('ground') !== -1) {
             console.log('🧱 Ground inserted:', JSON.parse(JSON.stringify({
                 name: object.name,
                 position: object.position.clone(),
