@@ -209,7 +209,7 @@ io.on('connection', (socket) => {
     };
 
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = { safeName, position: { x: 0, y: 0, z: 0 }, health: 100, safeModel };
+    rooms[roomId].players[socket.id] = { name: safeName, position: { x: 0, y: 0, z: 0 }, health: 100, modelName: safeModel };
     console.warn("Player created room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
     callback({ roomId, health: 100 });
@@ -231,7 +231,7 @@ io.on('connection', (socket) => {
     const safeModel = modelName.replace(/[^\w-]/g, '');
 
     socket.join(roomId);
-    rooms[roomId].players[socket.id] = { safeName, position: { x: 0, y: 0, z: 0 }, health: 100, safeModel };
+    rooms[roomId].players[socket.id] = { name: safeName, position: { x: 0, y: 0, z: 0 }, health: 100, modelName: safeModel };
     console.warn("Player joined room", socket.id);
     socket.emit("loadMap", rooms[roomId].map);
     callback({ success: true, health: 100 });
