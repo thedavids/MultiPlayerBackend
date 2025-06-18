@@ -1,6 +1,6 @@
 import http from 'http';
 import { Server } from 'socket.io';
-import { Octree, computeMapBounds } from './octree.js';
+import { OctreeNode, computeMapBounds } from './octree.js';
 
 const server = http.createServer();
 const io = new Server(server, {
