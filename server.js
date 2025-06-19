@@ -82,7 +82,7 @@ const maps = {
         "texture": "https://www.dailysummary.io/textures/stone.jpg"
       },
       {
-        "file": "https://www.dailysummary.io/textures/ModularRoadKit.glb",
+        "file": "https://www.dailysummary.io/models/ModularRoadKit.glb",
         "model": "Straight_Road",
         "size": [100, 1, 100],
         "position": { "x": 0, "y": 0, "z": 0 },
