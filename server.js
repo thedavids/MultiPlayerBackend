@@ -432,7 +432,7 @@ function handleDisconnect(socket) {
 setInterval(() => {
   const now = Date.now();
   for (const id in playerLastSeen) {
-    if (now - playerLastSeen[id] > 15000) {
+    if (now - playerLastSeen[id] > 300000) {
       const sock = io.sockets.sockets.get(id);
       if (sock) {
         console.warn("Client timeout disconnecting:", id);
@@ -443,7 +443,7 @@ setInterval(() => {
       }
     }
   }
-}, 10000);
+}, 30000);
 
 function cleanupStalePlayer(id) {
   for (const roomId in rooms) {
