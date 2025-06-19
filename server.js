@@ -83,7 +83,7 @@ const maps = {
       },
       {
         "file": "https://www.dailysummary.io/models/ModularRoadKit.glb",
-        "model": "Straight_Road",
+        "model": "road_square-Mesh",
         "size": [100, 1, 100],
         "position": { "x": 0, "y": 0, "z": 0 },
         "rotation": { "y": 90 },
