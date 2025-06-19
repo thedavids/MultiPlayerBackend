@@ -103,7 +103,14 @@ const maps = {
       { "position": { "x": 40, "y": 1, "z": 2.5 }, "size": [0.5, 3, 0.5], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 9.999997615814777, "y": 4.444444365952733, "z": 2.2222184546263724 }, "type": "box", "file": "https://www.dailysummary.io/models/ModularRoadKit.glb", "model": "light_curved", "offset": { "x": -0.4990909993648529, "y": 0, "z": 7 } }
     ],
     "healthPacks": []
-  }
+  },
+  bigCity: {
+  "name": "Big City",
+  "objects": [
+    {"position": {"x": 0,"y": 65,"z": 0},"size": [332,140,302],"rotation": {"x": 0,"y": 0,"z": 0},"scale": {"x": 1.990831431526063,"y": 1.988958187444187,"z": 1.999921682822281},"type":"box","file":"https://www.dailysummary.io/models/FullCity.glb","model":"Sketchfab_Scene","offset": {"x": -6.283851623535156,"y": 34.458319501665684,"z": 6.247860158213669}}
+  ],
+  "healthPacks": []
+}
 };
 
 function distanceVec3(a, b) {
