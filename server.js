@@ -71,6 +71,25 @@ const maps = {
       { "id": "hp2", "position": { "x": -30, "y": 8, "z": 20 }, "available": true },
       { "id": "hp3", "position": { "x": 40, "y": 21, "z": 0 }, "available": true }
     ]
+  },
+  road: {
+    "name": "Simple Road Test",
+    "objects": [
+      {
+        "type": "ground",
+        "position": { "x": 0, "y": -1, "z": 0 },
+        "size": [100, 1, 100],
+        "texture": "https://www.dailysummary.io/textures/stone.jpg"
+      },
+      {
+        "file": "Modular Road Kit.glb",
+        "model": "Straight_Road",
+        "position": { "x": 0, "y": 0, "z": 0 },
+        "rotation": { "y": 90 },
+        "scale": { "x": 2, "y": 2, "z": 2 }
+      }
+    ],
+    "healthPacks": []
   }
 };
 
@@ -184,7 +203,23 @@ io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
   playerLastSeen[socket.id] = Date.now();
 
-  socket.on('createRoom', ({ name, modelName }, callback) => {
+  socket.on('getMaps', (callback) => {
+    const availableMaps = Object.entries(maps).map(([id, map]) => ({
+      id,
+      name: map.name || id
+    }));
+    callback(availableMaps);
+  });
+
+  socket.on('getRooms', (callback) => {
+    const availableRooms = Object.entries(rooms).map(([id, room]) => ({
+      id,
+      count: Object.keys(room.players).length
+    }));
+    callback(availableRooms);
+  });
+
+  socket.on('createRoom', ({ name, modelName, mapName }, callback) => {
 
     // Basic input validation
     if (typeof name !== 'string' || typeof modelName !== 'string') {
@@ -197,9 +232,13 @@ io.on('connection', (socket) => {
     const safeName = name.replace(/[^\w\s-]/g, '');
     const safeModel = modelName.replace(/[^\w.-]/g, '');
 
+    if (mapName == null) {
+      mapName = 'default';
+    }
+
     const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
 
-    const map = maps.default;
+    const map = maps[mapName];
     ensureOctreeForMap(map);
 
     rooms[roomId] = {
@@ -236,6 +275,11 @@ io.on('connection', (socket) => {
     socket.emit("loadMap", rooms[roomId].map);
     callback({ success: true, health: 100 });
     io.to(roomId).emit('playerList', rooms[roomId].players);
+  });
+
+
+  socket.on("heartbeat", () => {
+    playerLastSeen[socket.id] = Date.now();
   });
 
   socket.on('move', (data) => {
@@ -379,18 +423,6 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     handleDisconnect(socket);
-  });
-
-  socket.on('getRooms', (callback) => {
-    const availableRooms = Object.entries(rooms).map(([id, room]) => ({
-      id,
-      count: Object.keys(room.players).length
-    }));
-    callback(availableRooms);
-  });
-
-  socket.on("heartbeat", () => {
-    playerLastSeen[socket.id] = Date.now();
   });
 
   socket.on('grappleStart', ({ roomId, origin, direction }) => {
