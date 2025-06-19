@@ -89,8 +89,8 @@ const maps = {
         "rotation": { "y": 90 },
         "scale": { "x": 2, "y": 2, "z": 2 }
       },
-      { "position": { "x": 0, "y": 3, "z": 0 }, "size": [10, 1, 4], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 10, "y": 12.50000027939678, "z": 2 }, "type": "box", "color": "#888888", "file": "https://www.dailysummary.io/models/ModularRoadKit.glb", "model": "road_splitBarrier", "offset": { "x": 4.571427822113037, "y": 0, "z": -5.142857074737549 } },
-      { "position": { "x": 0, "y": 0, "z": 0 }, "size": [10, 1, 4], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 10, "y": 12.499999988358468, "z": 4 }, "type": "box", "color": "#888888", "file": "https://www.dailysummary.io/models/ModularRoadKit.glb", "model": "road_square", "offset": { "x": 4, "y": 0.03000000026077032, "z": 0 } }
+      { "position": { "x": -10, "y": 0, "z": 0 }, "size": [10, 1, 4], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 10, "y": 12.50000027939678, "z": 2 }, "type": "box", "color": "#888888", "file": "https://www.dailysummary.io/models/ModularRoadKit.glb", "model": "road_splitBarrier", "offset": { "x": 4.571427822113037, "y": 0, "z": -5.142857074737549 } },
+      { "position": { "x": -5, "y": 0, "z": -10 }, "size": [10, 1, 4], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 10, "y": 12.499999988358468, "z": 4 }, "type": "box", "color": "#888888", "file": "https://www.dailysummary.io/models/ModularRoadKit.glb", "model": "road_square", "offset": { "x": 4, "y": 0.03000000026077032, "z": 0 } }
     ],
     "healthPacks": []
   }
