@@ -105,10 +105,10 @@ const maps = {
     "healthPacks": []
   },
   bigCity: {
-    "name": "Big City",
+    "name": "City",
     "objects": [
-      { "position": { "x": 0, "y": 97.5, "z": 0 }, "size": [498, 210, 453], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 2.9862471472890944, "y": 2.983437281166281, "z": 2.9998825242334215 }, "type": "box", "file": "https://www.dailysummary.io/models/FullCity.glb", "model": "Sketchfab_Scene", "offset": { "x": -6.283851623535156, "y": 34.458319501665684, "z": 6.247860158213669 } },
-      { "position": { "x": 0, "y": -5.55, "z": 0 }, "size": [1000, 1, 1000], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 1, "y": 1, "z": 1 }, "type": "box", "color": "#888888", "texture": "https://www.dailysummary.io/textures/stone.jpg" }
+      { "position": { "x": 0, "y": -6, "z": 0 }, "size": [1000, 1, 1000], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 1, "y": 1, "z": 1 }, "type": "box", "color": "#888888", "texture": "https://www.dailysummary.io/textures/stone.jpg" },
+      { "position": { "x": 0, "y": 92.5, "z": 0 }, "size": [814, 206, 800], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 1.9993230161949644, "y": 1.9846980309968454, "z": 1.9999352713911427 }, "type": "box", "file": "https://www.dailysummary.io/models/city.glb", "model": "Sketchfab_Scene", "offset": { "x": -212.53021621704102, "y": 49.25186499625598, "z": -208.66839599609375 } }
     ],
     "healthPacks": []
   }
