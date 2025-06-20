@@ -104,10 +104,17 @@ const maps = {
     ],
     "healthPacks": []
   },
-  bigCity: {
+  city: {
     "name": "City",
     "objects": [
       { "position": { "x": 0, "y": 92.5, "z": 0 }, "size": [814, 206, 800], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 1.9993230161949644, "y": 1.9846980309968454, "z": 1.9999352713911427 }, "type": "box", "file": "https://www.dailysummary.io/models/city_highres.glb", "model": "Sketchfab_Scene", "offset": { "x": -212.53021621704102, "y": 49.25186499625598, "z": -208.66839599609375 } }
+    ],
+    "healthPacks": []
+  },
+  anotherCity: {
+    "name": "Another city",
+    "objects": [
+      { "position": { "x": 0, "y": 65, "z": 0 }, "size": [332, 140, 302], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 1.990831431526063, "y": 1.988958187444187, "z": 1.999921682822281 }, "type": "box", "file": "https://www.dailysummary.io/models/FullCity.glb", "model": "Sketchfab_Scene", "offset": { "x": -6.283851623535156, "y": 34.458319501665684, "z": 6.247860158213669 } }
     ],
     "healthPacks": []
   }
