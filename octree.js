@@ -67,8 +67,23 @@ export class OctreeNode {
         if (typeof object.name === 'string' && object.name.indexOf('ground') !== -1) {
             console.log('🧱 Ground inserted:', JSON.parse(JSON.stringify({
                 name: object.name,
-                position: object.position.clone(),
-                box: object.userData.box.clone(),
+                position: {
+                    x: (object.center || object.position)?.x ?? 0,
+                    y: (object.center || object.position)?.y ?? 0,
+                    z: (object.center || object.position)?.z ?? 0,
+                },
+                box: {
+                    min: {
+                        x: object.userData.box?.min?.x ?? 0,
+                        y: object.userData.box?.min?.y ?? 0,
+                        z: object.userData.box?.min?.z ?? 0,
+                    },
+                    max: {
+                        x: object.userData.box?.max?.x ?? 0,
+                        y: object.userData.box?.max?.y ?? 0,
+                        z: object.userData.box?.max?.z ?? 0,
+                    },
+                },
                 size: object.size,
                 objAABB: objAABB,
                 rootAABB: rootAABB,
@@ -137,22 +152,18 @@ export class OctreeNode {
 
 
     computeObjectAABB(obj) {
+        const cx = obj.center?.x ?? obj.position.x;
+        const cy = obj.center?.y ?? obj.position.y;
+        const cz = obj.center?.z ?? obj.position.z;
         const half = {
             x: obj.size[0] / 2,
             y: obj.size[1] / 2,
             z: obj.size[2] / 2,
         };
+
         return {
-            min: {
-                x: obj.position.x - half.x,
-                y: obj.position.y - half.y,
-                z: obj.position.z - half.z,
-            },
-            max: {
-                x: obj.position.x + half.x,
-                y: obj.position.y + half.y,
-                z: obj.position.z + half.z,
-            },
+            min: { x: cx - half.x, y: cy - half.y, z: cz - half.z },
+            max: { x: cx + half.x, y: cy + half.y, z: cz + half.z },
         };
     }
 
@@ -185,7 +196,7 @@ export class OctreeNode {
 
         for (const obj of this.objects) {
             const objAABB = this.computeObjectAABB(obj);
-            if (typeof obj.name === 'string' && obj.name.indexOf('ground') !== -1) {
+            if (obj.name.indexOf('ground') !== -1) {
                 if (!this.once) {
 
                     console.log(queryBox, objAABB);
@@ -274,7 +285,7 @@ export function computeMapBounds(objects) {
 
     for (const obj of objects) {
         const size = obj.size;
-        const pos = obj.position;
+        const pos = (obj.center && typeof obj.center.x === 'number') ? obj.center : obj.position;
 
         const half = {
             x: size[0] / 2,
