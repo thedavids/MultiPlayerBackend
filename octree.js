@@ -1,3 +1,11 @@
+let THREE;
+
+if (typeof window !== 'undefined' && window.THREE) {
+  THREE = window.THREE;
+} else {
+  THREE = await import('three'); // ✅ Only works with top-level await
+}
+
 export class OctreeNode {
     constructor(center, size, depth = 0, maxDepth = 5, maxObjects = 8) {
         this.center = center; // { x, y, z }
