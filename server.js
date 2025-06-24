@@ -119,7 +119,14 @@ const maps = {
       { "position": { "x": 0, "y": -4.5, "z": 0 }, "size": [500, 1, 500], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 1, "y": 1, "z": 1 }, "type": "box", "color": "#888888", "texture": "https://www.dailysummary.io/textures/stone.jpg" }
     ],
     "healthPacks": []
-  }
+  },
+  npmSmart: {
+  "name": "Block town",
+  "objects": [
+    {"position": {"x": 0,"y": 30,"z": 0},"size": [500.15,75,500.15],"rotation": {"x": 0,"y": 0,"z": 0},"scale": {"x": 97.11650702509202,"y": 99.9998649062582,"z": 97.11650702509202},"type":"box","file":"https://www.dailysummary.io/models/npcs_are_becoming_smart_map.glb","model":"Sketchfab_Scene","offset": {"x": 0,"y": 0.0222455019746981,"z": 0}}
+  ],
+  "healthPacks": []
+}
 };
 
 function distanceVec3(a, b) {
