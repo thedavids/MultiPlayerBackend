@@ -536,20 +536,25 @@ io.on('connection', (socket) => {
     // Apply damage to hit players
     for (const [targetId, { totalDamage, position }] of Object.entries(hitsPerPlayer)) {
       const victim = room.players[targetId];
-      victim.health = (victim.health || 100) - totalDamage;
+      victim.health = (victim.health || 100);
 
-      io.to(roomId).emit("shotgunHit", {
-        shooterId: socket.id,
-        targetId,
-        position,
-        origin,
-        direction,
-        health: Math.max(0, victim.health)
-      });
+      if (victim.health > 0) {
+        victim.health -= totalDamage;
 
-      if (victim.health <= 0) {
-        respawnPlayer(roomId, targetId, socket.id, "shotgunned");
+        io.to(roomId).emit("shotgunHit", {
+          shooterId: socket.id,
+          targetId,
+          position,
+          origin,
+          direction,
+          health: Math.max(0, victim.health)
+        });
+
+        if (victim.health <= 0) {
+          respawnPlayer(roomId, targetId, socket.id, "shotgunned");
+        }
       }
+
     }
   });
 
