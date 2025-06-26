@@ -10,6 +10,13 @@ const io = new Server(server, {
   }
 });
 
+process.on("uncaughtException", err => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+});
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("UNHANDLED PROMISE:", reason);
+});
+
 const rooms = {};
 const playerLastSeen = {}; // { socket.id: timestamp }
 const activeLasers = {}; // roomId -> [{ id, shooterId, origin, direction, position, life }]
