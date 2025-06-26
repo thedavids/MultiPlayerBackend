@@ -311,8 +311,8 @@ io.on('connection', (socket) => {
     socket.emit("loadMap", rooms[roomId].map);
     callback({ success: true, health: 100 });
     io.to(roomId).emit('playerList', rooms[roomId].players);
+    sendMessage(safeName + ' joined the game.');
   });
-
 
   socket.on("heartbeat", () => {
     playerLastSeen[socket.id] = Date.now();
@@ -434,20 +434,24 @@ io.on('connection', (socket) => {
     // === 3. Act on nearest hit ===
     if (hitPlayerId) {
       const victim = room.players[hitPlayerId];
-      victim.health = (victim.health || 100) - 5;
+      victim.health = (victim.health || 100);
 
-      io.to(roomId).emit("machinegunHit", {
-        shooterId: socket.id,
-        targetId: hitPlayerId,
-        position: hitPlayerPos,
-        origin,
-        direction,
-        health: Math.max(0, victim.health),
-        damage: 5
-      });
+      if (victim.health > 0) {
+        victim.health -= 5;
 
-      if (victim.health <= 0) {
-        respawnPlayer(roomId, hitPlayerId, socket.id, "machine gunned");
+        io.to(roomId).emit("machinegunHit", {
+          shooterId: socket.id,
+          targetId: hitPlayerId,
+          position: hitPlayerPos,
+          origin,
+          direction,
+          health: Math.max(0, victim.health),
+          damage: 5
+        });
+
+        if (victim.health <= 0) {
+          respawnPlayer(roomId, hitPlayerId, socket.id, "machine gunned");
+        }
       }
     } else if (wallHitPos) {
       io.to(roomId).emit("machinegunBlocked", {
@@ -585,6 +589,7 @@ function handleDisconnect(socket) {
       if (activeLasers[roomId]) {
         activeLasers[roomId] = activeLasers[roomId].filter(l => l.shooterId !== socket.id);
       }
+      sendMessage(rooms[roomId].players[socket.id].name + ' left the game.');
       delete rooms[roomId].players[socket.id];
       io.to(roomId).emit('playerDisconnected', socket.id);
       console.log(`Client disconnected: ${socket.id}`);
@@ -818,6 +823,12 @@ function randomUnitVector() {
   const y = Math.random() * 2 - 1;
   const z = Math.random() * 2 - 1;
   return { x, y, z };
+}
+
+function sendMessage(message) {
+  io.to(roomId).emit('serverMessage', {
+    message: message
+  });
 }
 
 function tryPickupHealthPack(roomId, playerId) {
