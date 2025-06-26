@@ -445,7 +445,7 @@ io.on('connection', (socket) => {
       victim.health = (victim.health || 100);
 
       if (victim.health > 0) {
-        victim.health -= 5;
+        victim.health -= 3;
 
         io.to(roomId).emit("machinegunHit", {
           shooterId: socket.id,
@@ -454,7 +454,7 @@ io.on('connection', (socket) => {
           origin,
           direction,
           health: Math.max(0, victim.health),
-          damage: 5
+          damage: 3
         });
 
         if (victim.health <= 0) {
@@ -802,8 +802,8 @@ setInterval(() => {
 
 function computeShotgunDamage(distance) {
   if (distance < 5) return 5;
-  if (distance < 15) return 2;
-  if (distance < 30) return 1;
+  if (distance < 15) return 4;
+  if (distance < 30) return 2;
   return 0;
 }
 
