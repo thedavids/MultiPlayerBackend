@@ -812,25 +812,22 @@ function toVector3(obj) {
 }
 
 function getSpreadDirection(baseDir, spreadAngleDeg) {
-  const angle = (Math.random() - 0.5) * THREE.MathUtils.degToRad(spreadAngleDeg);
-  const axis = randomUnitVector();
-  return rotateVectorAroundAxis(baseDir, axis, angle).normalize();
-}
+  const spreadAngleRad = THREE.MathUtils.degToRad(spreadAngleDeg);
+  const randomAngle = Math.random() * 2 * Math.PI;
+  const randomRadius = Math.random() * Math.tan(spreadAngleRad);
 
-function rotateVectorAroundAxis(vec, axis, angle) {
-  const v = toVector3(vec);
-  const a = toVector3(axis).normalize();
+  // Get orthogonal basis to baseDir
+  const dir = toVector3(baseDir).clone().normalize();
+  const up = Math.abs(dir.y) < 0.99 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+  const right = new THREE.Vector3().crossVectors(up, dir).normalize();
+  const upOrtho = new THREE.Vector3().crossVectors(dir, right).normalize();
 
-  const q = new THREE.Quaternion();
-  q.setFromAxisAngle(a, angle);
-  return v.applyQuaternion(q);
-}
+  // Offset direction in a cone
+  const offset = right.multiplyScalar(Math.cos(randomAngle) * randomRadius)
+    .add(upOrtho.multiplyScalar(Math.sin(randomAngle) * randomRadius));
 
-function randomUnitVector() {
-  const x = Math.random() * 2 - 1;
-  const y = Math.random() * 2 - 1;
-  const z = Math.random() * 2 - 1;
-  return { x, y, z };
+  const spreadDir = dir.clone().add(offset).normalize();
+  return spreadDir;
 }
 
 function sendMessage(roomId, message) {
