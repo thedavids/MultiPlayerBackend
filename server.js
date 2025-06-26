@@ -785,6 +785,10 @@ function computeShotgunDamage(distance) {
   return 1;
 }
 
+function toVector3(obj) {
+  return new THREE.Vector3(obj.x, obj.y, obj.z);
+}
+
 function getSpreadDirection(baseDir, spreadAngleDeg) {
   const angle = (Math.random() - 0.5) * THREE.MathUtils.degToRad(spreadAngleDeg);
   const axis = randomUnitVector();
@@ -792,9 +796,12 @@ function getSpreadDirection(baseDir, spreadAngleDeg) {
 }
 
 function rotateVectorAroundAxis(vec, axis, angle) {
+  const v = toVector3(vec);
+  const a = toVector3(axis).normalize();
+
   const q = new THREE.Quaternion();
-  q.setFromAxisAngle(axis, angle);
-  return vec.clone().applyQuaternion(q);
+  q.setFromAxisAngle(a, angle);
+  return v.applyQuaternion(q);
 }
 
 function randomUnitVector() {
