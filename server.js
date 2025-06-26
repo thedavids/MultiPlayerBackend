@@ -121,12 +121,12 @@ const maps = {
     "healthPacks": []
   },
   npmSmart: {
-  "name": "Block town",
-  "objects": [
-    {"position": {"x": 0,"y": 30,"z": 0},"size": [500.15,75,500.15],"rotation": {"x": 0,"y": 0,"z": 0},"scale": {"x": 97.11650702509202,"y": 99.9998649062582,"z": 97.11650702509202},"type":"box","file":"https://www.dailysummary.io/models/npcs_are_becoming_smart_map.glb","model":"Sketchfab_Scene","offset": {"x": 0,"y": 0.0222455019746981,"z": 0}}
-  ],
-  "healthPacks": []
-}
+    "name": "Block town",
+    "objects": [
+      { "position": { "x": 0, "y": 30, "z": 0 }, "size": [500.15, 75, 500.15], "rotation": { "x": 0, "y": 0, "z": 0 }, "scale": { "x": 97.11650702509202, "y": 99.9998649062582, "z": 97.11650702509202 }, "type": "box", "file": "https://www.dailysummary.io/models/npcs_are_becoming_smart_map.glb", "model": "Sketchfab_Scene", "offset": { "x": 0, "y": 0.0222455019746981, "z": 0 } }
+    ],
+    "healthPacks": []
+  }
 };
 
 function distanceVec3(a, b) {
@@ -457,6 +457,102 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on("shotgunFire", ({ roomId, origin, direction }) => {
+    const room = rooms[roomId];
+    if (!room || !room.players[socket.id]) return;
+
+    const PELLET_COUNT = 8;
+    const SPREAD_ANGLE = 10; // degrees
+    const MAX_RANGE = 30;
+
+    const hitsPerPlayer = {}; // accumulate damage per target
+
+    for (let i = 0; i < PELLET_COUNT; i++) {
+      const pelletDir = getSpreadDirection(direction, SPREAD_ANGLE);
+      let nearestWallDist = Infinity;
+      let wallHitPos = null;
+
+      const nearbyObjects = room.octree.queryRay(origin, pelletDir, MAX_RANGE);
+
+      const intersectables = nearbyObjects
+        .map(obj => {
+          const { min, max } = getAABB(obj);
+          const dist = rayIntersectsAABB(origin, pelletDir, MAX_RANGE, min, max);
+          return dist != null ? { obj, dist, min, max } : null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.dist - b.dist);
+
+      for (const { dist } of intersectables) {
+        nearestWallDist = dist;
+        wallHitPos = addVec3(origin, scaleVec3(pelletDir, dist));
+        break;
+      }
+
+      let hitPlayerId = null;
+      let hitPlayerPos = null;
+
+      const playerHalfSize = { x: 0.4, y: 0.9, z: 0.4 };
+
+      for (const [pid, player] of Object.entries(room.players)) {
+        if (pid === socket.id) continue;
+
+        const min = {
+          x: player.position.x - playerHalfSize.x,
+          y: player.position.y - playerHalfSize.y,
+          z: player.position.z - playerHalfSize.z
+        };
+
+        const max = {
+          x: player.position.x + playerHalfSize.x,
+          y: player.position.y + playerHalfSize.y,
+          z: player.position.z + playerHalfSize.z
+        };
+
+        const hitDist = rayIntersectsAABB(origin, pelletDir, MAX_RANGE, min, max);
+        if (hitDist != null && hitDist < nearestWallDist) {
+          nearestWallDist = hitDist;
+          hitPlayerId = pid;
+          hitPlayerPos = addVec3(origin, scaleVec3(pelletDir, hitDist));
+        }
+      }
+
+      if (hitPlayerId) {
+        const damage = computeShotgunDamage(nearestWallDist);
+        hitsPerPlayer[hitPlayerId] = hitsPerPlayer[hitPlayerId] || {
+          totalDamage: 0,
+          position: hitPlayerPos
+        };
+        hitsPerPlayer[hitPlayerId].totalDamage += damage;
+      } else if (wallHitPos) {
+        io.to(roomId).emit("shotgunBlocked", {
+          shooterId: socket.id,
+          origin,
+          direction: pelletDir
+        });
+      }
+    }
+
+    // Apply damage to hit players
+    for (const [targetId, { totalDamage, position }] of Object.entries(hitsPerPlayer)) {
+      const victim = room.players[targetId];
+      victim.health = (victim.health || 100) - totalDamage;
+
+      io.to(roomId).emit("shotgunHit", {
+        shooterId: socket.id,
+        targetId,
+        position,
+        origin,
+        direction,
+        health: Math.max(0, victim.health)
+      });
+
+      if (victim.health <= 0) {
+        respawnPlayer(roomId, targetId, socket.id, "shotgunned");
+      }
+    }
+  });
+
   socket.on('disconnect', () => {
     handleDisconnect(socket);
   });
@@ -682,6 +778,31 @@ setInterval(() => {
     }
   }
 }, 1000 / 60); // 60 FPS
+
+function computeShotgunDamage(distance) {
+  if (distance < 5) return 30;
+  if (distance < 15) return 10;
+  return 1;
+}
+
+function getSpreadDirection(baseDir, spreadAngleDeg) {
+  const angle = (Math.random() - 0.5) * THREE.MathUtils.degToRad(spreadAngleDeg);
+  const axis = randomUnitVector();
+  return rotateVectorAroundAxis(baseDir, axis, angle).normalize();
+}
+
+function rotateVectorAroundAxis(vec, axis, angle) {
+  const q = new THREE.Quaternion();
+  q.setFromAxisAngle(axis, angle);
+  return vec.clone().applyQuaternion(q);
+}
+
+function randomUnitVector() {
+  const x = Math.random() * 2 - 1;
+  const y = Math.random() * 2 - 1;
+  const z = Math.random() * 2 - 1;
+  return { x, y, z };
+}
 
 function tryPickupHealthPack(roomId, playerId) {
   const room = rooms[roomId];
