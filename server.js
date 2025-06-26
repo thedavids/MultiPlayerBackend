@@ -442,7 +442,8 @@ io.on('connection', (socket) => {
         position: hitPlayerPos,
         origin,
         direction,
-        health: Math.max(0, victim.health)
+        health: Math.max(0, victim.health),
+        damage: 5
       });
 
       if (victim.health <= 0) {
@@ -547,7 +548,8 @@ io.on('connection', (socket) => {
           position,
           origin,
           direction,
-          health: Math.max(0, victim.health)
+          health: Math.max(0, victim.health),
+          damage: totalDamage
         });
 
         if (victim.health <= 0) {
@@ -769,7 +771,8 @@ function updateRoomLasers(roomId) {
           shooterId: laser.shooterId,
           targetId: hitId,
           position: laser.position,
-          health: hitPlayer.health
+          health: hitPlayer.health,
+          damage: 10
         });
       }
     }
