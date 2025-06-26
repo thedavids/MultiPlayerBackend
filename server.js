@@ -311,7 +311,7 @@ io.on('connection', (socket) => {
     socket.emit("loadMap", rooms[roomId].map);
     callback({ success: true, health: 100 });
     io.to(roomId).emit('playerList', rooms[roomId].players);
-    sendMessage(safeName + ' joined the game.');
+    sendMessage(roomId, safeName + ' joined the game.');
   });
 
   socket.on("heartbeat", () => {
@@ -589,7 +589,7 @@ function handleDisconnect(socket) {
       if (activeLasers[roomId]) {
         activeLasers[roomId] = activeLasers[roomId].filter(l => l.shooterId !== socket.id);
       }
-      sendMessage(rooms[roomId].players[socket.id].name + ' left the game.');
+      sendMessage(roomId, rooms[roomId].players[socket.id].name + ' left the game.');
       delete rooms[roomId].players[socket.id];
       io.to(roomId).emit('playerDisconnected', socket.id);
       console.log(`Client disconnected: ${socket.id}`);
@@ -825,7 +825,7 @@ function randomUnitVector() {
   return { x, y, z };
 }
 
-function sendMessage(message) {
+function sendMessage(roomId, message) {
   io.to(roomId).emit('serverMessage', {
     message: message
   });
