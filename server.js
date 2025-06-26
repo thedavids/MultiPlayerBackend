@@ -323,6 +323,7 @@ io.on('connection', (socket) => {
 
   socket.on("heartbeat", () => {
     playerLastSeen[socket.id] = Date.now();
+    socket.emit("heartbeatAck");
   });
 
   socket.on('move', (data) => {
