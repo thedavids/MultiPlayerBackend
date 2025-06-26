@@ -780,9 +780,10 @@ setInterval(() => {
 }, 1000 / 60); // 60 FPS
 
 function computeShotgunDamage(distance) {
-  if (distance < 5) return 30;
-  if (distance < 15) return 10;
-  return 1;
+  if (distance < 5) return 5;
+  if (distance < 15) return 2;
+  if (distance < 30) return 1;
+  return 0;
 }
 
 function toVector3(obj) {
