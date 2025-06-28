@@ -345,7 +345,7 @@ io.on('connection', (socket) => {
         if (position.y < -100 && room.players[socket.id].health > 0 && !room.players[socket.id].isDead) {
           room.players[socket.id].health = 0;
           room.players[socket.id].isDead = true;
-          respawnPlayer(roomId, socket.id, socket.id, 'fell to his death');
+          respawnPlayer(roomId, socket.id, socket.id, 'fell to his death', 100);
         }
       }
     } catch (err) {
@@ -647,7 +647,7 @@ function cleanupStalePlayer(id) {
   delete playerLastSeen[id];
 }
 
-function respawnPlayer(roomId, playerId, shooterId, action) {
+function respawnPlayer(roomId, playerId, shooterId, action, timer = 1000) {
   const room = rooms[roomId];
   if (!room || !room.players[playerId]) return;
 
@@ -688,7 +688,7 @@ function respawnPlayer(roomId, playerId, shooterId, action) {
       isIdle: true,
       isGrounded: true
     });
-  }, 1000);
+  }, timer);
 }
 
 function updateRoomLasers(roomId) {
